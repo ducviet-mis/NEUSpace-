@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-sans: "Inter", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-brand-navy: #0F172A;
+  --color-brand-midnight: #1E1B4B;
+  --color-brand-royal: #1D4ED8;
+  --color-brand-cyan: #06b6d4;
+  --color-brand-azure: #3B82F6;
+  --color-brand-violet: #8B5CF6;
+  --color-brand-coral: #ef4444;
 
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-glass-panel: var(--glass-panel);
+  --color-glass-border: var(--glass-border);
 }
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f0f4f8;
+    --foreground: #0f172a;
+    --glass-panel: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+  }
+
+  .dark {
+    --background: #0a192f;
+    --foreground: #ffffff;
+    --glass-panel: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.2);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-brand-cyan/30 transition-colors duration-500;
+  }
+  
+  /* Global form styles for glass theme */
+  input, select, textarea {
+    @apply bg-glass-panel border border-glass-border text-foreground rounded-lg focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition-colors;
+  }
+  
+  option {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-glass-panel backdrop-blur-2xl border border-glass-border shadow-[0_8px_32px_0_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,0.4)] rounded-3xl transition-all duration-500;
+  }
+  
+  .glass-card {
+    @apply bg-glass-panel backdrop-blur-2xl border border-glass-border shadow-[0_4px_16px_0_rgba(0,0,0,0.05),inset_0_1px_1px_rgba(255,255,255,0.4)] rounded-3xl transition-all duration-500 hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)];
+  }
+  
+  .glass-nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300;
+  }
+  .glass-nav-item:hover {
+    @apply bg-brand-cyan/10 text-brand-cyan;
+  }
+  .glass-nav-item.active {
+    @apply bg-gradient-to-r from-brand-cyan/20 to-transparent text-brand-cyan border-l-4 border-brand-cyan shadow-[0_0_20px_rgba(6,182,212,0.15)] font-bold;
+  }
 }
