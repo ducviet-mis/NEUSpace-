@@ -56,6 +56,11 @@ export default function AuthPage({ onLogin }: { onLogin: () => void }) {
 
       <div className="glass-panel p-8 w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-500">
         <div className="text-center mb-8 flex flex-col items-center">
+          <img
+            src="/neu-space-icon.png"
+            alt="NEU SPACE"
+            className="w-16 h-16 rounded-2xl shadow-lg shadow-cyan-500/20 mb-4"
+          />
           <h1 className="text-2xl font-bold tracking-[0.16em]">NEU SPACE</h1>
           <p className="opacity-60 text-xs mt-2 uppercase tracking-wider">Không gian học tập cá nhân</p>
           <h2 className="text-lg font-bold text-cyan-600 dark:text-cyan-400 mt-2 uppercase tracking-wide">

@@ -198,6 +198,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <button className="md:hidden text-foreground/70 hover:text-foreground p-2" onClick={() => setIsMobileOpen(true)}>
                   <Menu size={24} />
                 </button>
+                <img
+                  src="/neu-space-icon.png"
+                  alt="NEU SPACE"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-2xl shadow-lg shadow-cyan-500/20"
+                />
                 <h1 className="text-lg md:text-2xl font-bold tracking-widest uppercase drop-shadow-sm hidden sm:block mt-1 bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
                   NEU SPACE
                 </h1>
