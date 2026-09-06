@@ -120,7 +120,7 @@ function exportSpreadsheetCsv(events: TimetableEvent[], profile: { full_name?: s
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   const link = document.createElement('a');
   link.href = url;
-  link.download = `TKB_NEU_${safeFileName(profile?.full_name ?? '')}.csv`;
+  link.download = `TKB_NEU_SPACE_${safeFileName(profile?.full_name ?? '')}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -225,21 +225,12 @@ const TimetableCanvas = React.forwardRef<HTMLDivElement, CanvasProps>(
             gap: isPhone ? 12 : 0,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: isPhone ? 16 : 24 }}>
-              <div style={{
-                width: isPhone ? 56 : 80, height: isPhone ? 56 : 80,
-                background: 'rgba(255,255,255,0.9)', borderRadius: isPhone ? 16 : 24,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: 4,
-                boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-              }}>
-                <img src="/neu-logo.png" alt="NEU" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-              </div>
               <div>
                 <div style={{ fontSize: titleFontSize, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                  THỜI KHÓA BIỂU
+                  NEU SPACE
                 </div>
                 <div style={{ fontSize: subtitleFontSize, opacity: 0.6, fontWeight: 500, marginTop: 4 }}>
-                  Học Kỳ Tiêu Chuẩn
+                  Thời khóa biểu cá nhân
                 </div>
               </div>
             </div>
@@ -254,10 +245,10 @@ const TimetableCanvas = React.forwardRef<HTMLDivElement, CanvasProps>(
                 textAlign: isPhone ? 'left' : 'right',
               }}>
                 <div style={{ fontSize: isPhone ? 22 : 28, fontWeight: 700, marginBottom: 4 }}>
-                  {profile.full_name || 'Sinh viên NEU'}
+                  {profile.full_name || 'Sinh viên'}
                 </div>
                 <div style={{ fontSize: isPhone ? 16 : 22, opacity: 0.6 }}>
-                  {profile.student_code || ''}{profile.student_code && profile.major_name ? ' • ' : ''}{profile.major_name || 'NEU'}
+                  {profile.student_code || ''}{profile.student_code && profile.major_name ? ' • ' : ''}{profile.major_name || 'Chưa chọn ngành'}
                 </div>
               </div>
             )}
@@ -477,7 +468,7 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const fileNameBase = `TKB_NEU_${profile?.full_name ? profile.full_name.replace(/\s+/g, '') : 'SinhVien'}`;
+      const fileNameBase = `TKB_NEU_SPACE_${profile?.full_name ? profile.full_name.replace(/\s+/g, '') : 'SinhVien'}`;
 
       if (format === 'csv') {
         exportSpreadsheetCsv(events, profile, activeDays);

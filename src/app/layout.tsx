@@ -7,8 +7,8 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin", "vietnamese"] });
 
 export const metadata: Metadata = {
-  title: "Tiện Ích Sinh Viên NEU",
-  description: "Quản lý thời khóa biểu, theo dõi GPA và lập kế hoạch học tập dành cho sinh viên ĐH Kinh tế Quốc dân.",
+  title: "NEU SPACE",
+  description: "Không gian hỗ trợ quản lý thời khóa biểu, theo dõi GPA và lập kế hoạch học tập cá nhân.",
 };
 
 export default function RootLayout({

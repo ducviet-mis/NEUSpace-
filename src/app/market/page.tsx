@@ -139,7 +139,7 @@ export default function MarketPage() {
             Góc Pass Giáo Trình
           </h1>
           <p className="opacity-70 max-w-2xl text-sm leading-relaxed">
-            Nơi sinh viên NEU mua bán, trao đổi giáo trình và tài liệu học tập. Dễ dàng tìm kiếm sách theo môn học và kết nối trực tiếp với người bán.
+            Nơi sinh viên mua bán, trao đổi giáo trình và tài liệu học tập. Dễ dàng tìm kiếm sách theo môn học và kết nối trực tiếp với người bán.
           </p>
         </div>
         <div className="flex flex-col gap-3 w-full md:w-auto relative z-10">

@@ -288,7 +288,7 @@ export default function TimetablePage() {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <CalendarIcon className="text-cyan-400" />
-            Thời Khóa Biểu NEU
+            Thời khóa biểu
           </h1>
           <p className="opacity-70 mt-1">Lưới thời gian (Time Grid Calendar) chuẩn sinh viên.</p>
         </div>

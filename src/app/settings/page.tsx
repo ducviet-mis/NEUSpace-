@@ -198,7 +198,7 @@ export default function SettingsPage() {
     return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="animate-spin text-brand-cyan w-8 h-8" /></div>;
   }
 
-  const generatedAvatar = avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || email || 'NEU')}&background=0D9488&color=fff&size=128`;
+  const generatedAvatar = avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || email || 'Student')}&background=0D9488&color=fff&size=128`;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-12 animate-in fade-in duration-500">
@@ -247,7 +247,7 @@ export default function SettingsPage() {
               </label>
             </div>
 
-            <h2 className="font-bold text-xl">{fullName || 'Sinh viên NEU'}</h2>
+            <h2 className="font-bold text-xl">{fullName || 'Sinh viên'}</h2>
             <p className="text-sm opacity-70 mt-1">{majorName || 'Chưa chọn ngành'}</p>
             <p className="text-xs bg-brand-cyan/10 text-brand-cyan px-3 py-1 rounded-full mt-3 font-semibold">
               Khóa: {cohort || '---'}

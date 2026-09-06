@@ -198,11 +198,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <button className="md:hidden text-foreground/70 hover:text-foreground p-2" onClick={() => setIsMobileOpen(true)}>
                   <Menu size={24} />
                 </button>
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center p-1 shadow-[0_0_15px_rgba(255,255,255,0.3)] border border-black/5 dark:border-white/20">
-                  <img src="/neu-logo.png" alt="NEU" className="w-full h-full object-contain" />
-                </div>
                 <h1 className="text-lg md:text-2xl font-bold tracking-widest uppercase drop-shadow-sm hidden sm:block mt-1 bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
-                  ĐẠI HỌC KINH TẾ QUỐC DÂN
+                  NEU SPACE
                 </h1>
               </div>
 
@@ -303,7 +300,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)} />
                       <div className="absolute right-0 top-full mt-3 w-56 bg-background/95 backdrop-blur-3xl border border-glass-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
                         <div className="p-4 border-b border-glass-border bg-foreground/5">
-                          <p className="font-bold text-foreground text-sm truncate">{profile?.full_name || 'Sinh viên NEU'}</p>
+                          <p className="font-bold text-foreground text-sm truncate">{profile?.full_name || 'Sinh viên'}</p>
                         </div>
                         <div className="p-2 flex flex-col gap-1">
                           <Link href="/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground/80 hover:bg-foreground/10 hover:text-foreground transition-colors" onClick={() => setIsUserMenuOpen(false)}>

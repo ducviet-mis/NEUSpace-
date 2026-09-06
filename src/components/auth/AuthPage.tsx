@@ -56,15 +56,13 @@ export default function AuthPage({ onLogin }: { onLogin: () => void }) {
 
       <div className="glass-panel p-8 w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-500">
         <div className="text-center mb-8 flex flex-col items-center">
-          <div className="w-20 h-20 mb-4">
-            <img src="/neu-logo.png" alt="NEU Logo" className="w-full h-full object-contain drop-shadow-xl" />
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight">Tiện ích Sinh viên NEU</h1>
+          <h1 className="text-2xl font-bold tracking-[0.16em]">NEU SPACE</h1>
+          <p className="opacity-60 text-xs mt-2 uppercase tracking-wider">Không gian học tập cá nhân</p>
           <h2 className="text-lg font-bold text-cyan-600 dark:text-cyan-400 mt-2 uppercase tracking-wide">
             {isLogin ? 'Đăng nhập' : 'Đăng ký tài khoản'}
           </h2>
           <p className="opacity-70 text-sm mt-1">
-            {isLogin ? 'Sẵn sàng cho một kỳ học tập hiệu quả' : 'Tạo tài khoản mới để bắt đầu sử dụng'}
+            {isLogin ? 'Sẵn sàng cho một kỳ học hiệu quả' : 'Tạo tài khoản mới để bắt đầu sử dụng'}
           </p>
         </div>
 
