@@ -29,10 +29,10 @@ interface ExportModalProps {
 // ============================================================
 
 const SHIFTS = [
-  { id: '1-2', label: 'Ca 1-2', time: '06:45 - 09:25' },
-  { id: '3-4', label: 'Ca 3-4', time: '09:35 - 12:15' },
-  { id: '5-6', label: 'Ca 5-6', time: '13:00 - 15:40' },
-  { id: '7-8', label: 'Ca 7-8', time: '15:50 - 18:30' },
+  { id: '1-2', label: 'Ca 1–2', time: '06:45–09:25' },
+  { id: '3-4', label: 'Ca 3–4', time: '09:35–12:15' },
+  { id: '5-6', label: 'Ca 5–6', time: '13:00–15:40' },
+  { id: '7-8', label: 'Ca 7–8', time: '15:50–18:30' },
 ];
 
 const DAYS = [
@@ -166,7 +166,7 @@ const TimetableCanvas = React.forwardRef<HTMLDivElement, CanvasProps>(
 
     const padding = isPhone ? 40 : 60;
     const clockSpaceHeight = isPhone && leaveClockSpace ? height * 0.28 : 0;
-    const shiftColWidth = isPhone ? 120 : 160;
+    const shiftColWidth = isPhone ? 190 : 245;
 
     const titleFontSize = isPhone ? 36 : 52;
     const subtitleFontSize = isPhone ? 20 : 28;
@@ -175,6 +175,11 @@ const TimetableCanvas = React.forwardRef<HTMLDivElement, CanvasProps>(
     const shiftTimeFontSize = isPhone ? 14 : 16;
     const cardTitleFontSize = isPhone ? 16 : 18;
     const cardDetailFontSize = isPhone ? 13 : 14;
+    const profileInfoValues = [profile?.major_name, profile?.student_code]
+      .filter((value): value is string => Boolean(value));
+    const profileMajor = profileInfoValues.find(value => !/^\d{5,}$/.test(value.trim())) ?? profile?.major_name;
+    const profileCode = profileInfoValues.find(value => /^\d{5,}$/.test(value.trim())) ?? profile?.student_code;
+    const academicInfo = [profileMajor, profileCode].filter(Boolean).join(' · ');
 
     return (
       <div
@@ -243,12 +248,21 @@ const TimetableCanvas = React.forwardRef<HTMLDivElement, CanvasProps>(
                 borderRadius: isPhone ? 16 : 24,
                 padding: isPhone ? '12px 20px' : '16px 32px',
                 textAlign: isPhone ? 'left' : 'right',
+                width: isPhone ? 360 : undefined,
+                maxWidth: '100%',
+                boxSizing: 'border-box',
               }}>
                 <div style={{ fontSize: isPhone ? 22 : 28, fontWeight: 700, marginBottom: 4 }}>
                   {profile.full_name || 'Sinh viên'}
                 </div>
-                <div style={{ fontSize: isPhone ? 16 : 22, opacity: 0.6 }}>
-                  {profile.student_code || ''}{profile.student_code && profile.major_name ? ' • ' : ''}{profile.major_name || 'Chưa chọn ngành'}
+                <div style={{
+                  fontSize: isPhone ? 15 : 22,
+                  opacity: 0.6,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
+                  {academicInfo || 'Chưa chọn ngành'}
                 </div>
               </div>
             )}
@@ -312,13 +326,14 @@ const TimetableCanvas = React.forwardRef<HTMLDivElement, CanvasProps>(
                     width: shiftColWidth, minWidth: shiftColWidth, maxWidth: shiftColWidth,
                     borderRight: `1px solid ${gridBorder}`,
                     background: shiftColBg,
-                    display: 'flex', flexDirection: 'column',
+                    display: 'flex', flexDirection: 'row', gap: isPhone ? 8 : 12,
                     alignItems: 'center', justifyContent: 'center',
-                    padding: '8px 4px',
+                    padding: '8px 10px',
                     boxSizing: 'border-box',
+                    whiteSpace: 'nowrap',
                   }}>
                     <div style={{ fontWeight: 700, fontSize: shiftLabelFontSize }}>{shift.label}</div>
-                    <div style={{ fontSize: shiftTimeFontSize, opacity: 0.5, marginTop: 4 }}>{shift.time}</div>
+                    <div style={{ fontSize: shiftTimeFontSize, opacity: 0.58 }}>· {shift.time}</div>
                   </div>
 
                   {/* Day cells */}

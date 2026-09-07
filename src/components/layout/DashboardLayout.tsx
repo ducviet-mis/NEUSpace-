@@ -153,8 +153,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Desktop App Window */}
       <div className="w-full min-h-dvh md:h-full flex overflow-visible md:overflow-hidden relative z-10">
         
-        {/* Sidebar */}
-        <aside className={`fixed md:static inset-y-0 left-0 z-50 h-dvh md:h-auto ${asideWidth} border-r border-glass-border flex flex-col pt-[max(1.5rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:py-6 flex-shrink-0 overflow-hidden bg-background md:bg-glass-panel/30 backdrop-blur-2xl transition-transform duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl md:shadow-none`}>
+        {/* Desktop sidebar. Mobile navigation is rendered separately at the root
+            so it can never be affected by the document scroll container. */}
+        <aside className={`hidden md:flex md:static ${asideWidth} border-r border-glass-border flex-col py-6 flex-shrink-0 overflow-hidden bg-glass-panel/30 backdrop-blur-2xl shadow-none`}>
             
             <div className={`flex items-center ${isDesktopExpanded ? 'justify-between px-6' : 'justify-center'} mb-8 w-full`}>
               <Menu 
@@ -194,11 +195,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Main Content Area */}
         <div className="flex-1 min-w-0 min-h-dvh md:min-h-0 flex flex-col md:h-full md:overflow-hidden text-foreground relative">
             
-            {/* Mobile Overlay */}
-            {isMobileOpen && (
-              <div className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity" onClick={() => setIsMobileOpen(false)} />
-            )}
-
             {/* Header */}
             <header className="h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:h-24 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 md:px-8 flex-shrink-0 bg-glass-panel/50 backdrop-blur-2xl z-20 transition-colors duration-500">
               <div className="flex items-center gap-2.5 md:gap-4 min-w-0">
@@ -361,6 +357,52 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
         </div>
       </nav>
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-[70] md:hidden" role="presentation">
+          <button
+            type="button"
+            className="absolute inset-0 w-full h-full cursor-default bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsMobileOpen(false)}
+            aria-label="Đóng menu"
+          />
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu điều hướng"
+            className="absolute inset-y-0 left-0 z-[71] w-72 max-w-[calc(100vw-3rem)] flex flex-col overflow-hidden border-r border-glass-border bg-background/95 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl backdrop-blur-2xl animate-in slide-in-from-left-4 duration-200"
+          >
+            <div className="mb-6 flex items-center justify-between px-5">
+              <span className="text-sm font-semibold tracking-[0.08em] text-foreground/90">Menu</span>
+              <button
+                type="button"
+                className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground/70 active:bg-foreground/10"
+                onClick={() => setIsMobileOpen(false)}
+                aria-label="Đóng menu"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <nav className="flex-1 space-y-2 overflow-y-auto overscroll-contain px-4 pb-2 touch-pan-y no-scrollbar" aria-label="Các chức năng khác">
+              {NAV_ITEMS.map(item => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileOpen(false)}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={`flex min-h-12 items-center gap-4 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-500/30' : 'text-foreground/75 active:bg-foreground/10'}`}
+                  >
+                    <Icon size={22} strokeWidth={isActive ? 2.5 : 2} aria-hidden="true" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
+        </div>
+      )}
       <style dangerouslySetInnerHTML={{__html: `
         .no-scrollbar::-webkit-scrollbar {
           display: none;
