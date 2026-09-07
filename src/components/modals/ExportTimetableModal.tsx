@@ -120,7 +120,7 @@ function exportSpreadsheetCsv(events: TimetableEvent[], profile: { full_name?: s
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   const link = document.createElement('a');
   link.href = url;
-  link.download = `TKB_NEU_SPACE_${safeFileName(profile?.full_name ?? '')}.csv`;
+  link.download = `TKB_neuOS_${safeFileName(profile?.full_name ?? '')}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -227,7 +227,7 @@ const TimetableCanvas = React.forwardRef<HTMLDivElement, CanvasProps>(
             <div style={{ display: 'flex', alignItems: 'center', gap: isPhone ? 16 : 24 }}>
               <div>
                 <div style={{ fontSize: titleFontSize, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                  NEU SPACE
+                  neuOS
                 </div>
                 <div style={{ fontSize: subtitleFontSize, opacity: 0.6, fontWeight: 500, marginTop: 4 }}>
                   Thời khóa biểu cá nhân
@@ -468,7 +468,7 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
   const handleExport = async () => {
     setIsExporting(true);
     try {
-      const fileNameBase = `TKB_NEU_SPACE_${profile?.full_name ? profile.full_name.replace(/\s+/g, '') : 'SinhVien'}`;
+      const fileNameBase = `TKB_neuOS_${profile?.full_name ? profile.full_name.replace(/\s+/g, '') : 'SinhVien'}`;
 
       if (format === 'csv') {
         exportSpreadsheetCsv(events, profile, activeDays);
@@ -509,7 +509,7 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
           try {
             await navigator.share({
               files: [imageFile],
-              title: 'Thời khóa biểu NEU SPACE',
+              title: 'Thời khóa biểu neuOS',
             });
             return;
           } catch (shareError) {

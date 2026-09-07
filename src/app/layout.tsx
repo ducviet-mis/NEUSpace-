@@ -7,14 +7,14 @@ import { ThemeProvider } from "@/components/providers/ThemeProvider";
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin", "vietnamese"] });
 
 export const metadata: Metadata = {
-  title: "NEU SPACE",
+  title: "neuOS",
   description: "Không gian hỗ trợ quản lý thời khóa biểu, theo dõi GPA và lập kế hoạch học tập cá nhân.",
-  applicationName: "NEU SPACE",
+  applicationName: "neuOS",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "NEU SPACE",
+    title: "neuOS",
   },
 };
 

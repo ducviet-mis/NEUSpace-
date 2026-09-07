@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "NEU SPACE",
-    short_name: "NEU SPACE",
+    name: "neuOS",
+    short_name: "neuOS",
     description: "Không gian hỗ trợ quản lý thời khóa biểu, theo dõi GPA và lập kế hoạch học tập cá nhân.",
     start_url: "/",
     display: "standalone",

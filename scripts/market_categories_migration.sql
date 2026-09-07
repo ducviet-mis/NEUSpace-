@@ -1,4 +1,4 @@
--- NEU SPACE: mở rộng Chợ sinh viên
+-- neuOS: mở rộng Chợ sinh viên
 -- Chạy một lần trong Supabase SQL Editor, sau khi đã có bảng public.book_listings.
 
 -- 1. Thêm danh mục. Toàn bộ tin cũ được xem là giáo trình để không mất dữ liệu.
