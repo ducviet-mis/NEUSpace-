@@ -165,21 +165,6 @@ export default function SettingsPage() {
     }
   };
 
-  const updateEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setMessage(null);
-    try {
-      const { error } = await supabase.auth.updateUser({ email });
-      if (error) throw error;
-      setMessage({ text: 'Yêu cầu đổi email đã được gửi. Vui lòng kiểm tra hộp thư để xác nhận.', type: 'success' });
-    } catch (err: any) {
-      setMessage({ text: err.message || 'Lỗi khi cập nhật email.', type: 'error' });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const signOutOtherDevices = async () => {
     setSaving(true);
     setMessage(null);
@@ -343,29 +328,20 @@ export default function SettingsPage() {
             </div>
           </form>
 
-          {/* Form 2: Email */}
-          <form onSubmit={updateEmail} className="glass-panel p-6">
+          {/* Email is intentionally read-only to preserve the student-email policy. */}
+          <section className="glass-panel p-6">
             <h3 className="font-bold flex items-center gap-2 mb-6 border-b border-border/50 pb-3">
               <Mail size={18} className="text-brand-violet" />
               Email liên kết
             </h3>
             
-            <div className="flex flex-col sm:flex-row gap-4 items-end">
-              <div className="flex-1 w-full">
-                <label className="block text-sm font-medium mb-1.5 opacity-80">Địa chỉ Email</label>
-                <input 
-                  type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-background border border-border rounded-lg p-2.5 text-sm focus:border-brand-violet outline-none transition-colors" 
-                />
-              </div>
-              <button 
-                type="submit" disabled={saving}
-                className="w-full sm:w-auto px-6 py-2.5 bg-brand-violet text-foreground rounded-lg text-sm font-medium shadow-lg shadow-brand-violet/20 hover:scale-[1.02] transition-transform disabled:opacity-70"
-              >
-                Cập nhật
-              </button>
+            <div className="rounded-xl border border-brand-violet/20 bg-brand-violet/5 p-4">
+              <p className="text-sm font-medium break-all">{email || 'Đang tải email...'}</p>
+              <p className="mt-2 text-xs leading-relaxed opacity-70">
+                Email đăng nhập được giữ cố định để bảo vệ tài khoản và duy trì điều kiện sử dụng email sinh viên.
+              </p>
             </div>
-          </form>
+          </section>
 
         </div>
       </div>
