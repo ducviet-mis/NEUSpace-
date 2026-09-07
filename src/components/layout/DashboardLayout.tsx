@@ -210,7 +210,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   alt="neuOS"
                   className="w-10 h-10 md:w-12 md:h-12 rounded-2xl shadow-lg shadow-cyan-500/20"
                 />
-                <h1 className="text-lg md:text-2xl font-bold tracking-widest uppercase drop-shadow-sm hidden sm:block mt-1 bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
+                <h1 className="text-lg md:text-2xl font-semibold tracking-[0.04em] drop-shadow-sm hidden sm:block mt-1 bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400 bg-clip-text text-transparent">
                   neuOS
                 </h1>
               </div>
