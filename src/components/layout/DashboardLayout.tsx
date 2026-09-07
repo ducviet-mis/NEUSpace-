@@ -154,7 +154,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="w-full min-h-dvh md:h-full flex overflow-visible md:overflow-hidden relative z-10">
         
         {/* Sidebar */}
-        <aside className={`absolute md:static inset-y-0 left-0 z-50 ${asideWidth} border-r border-glass-border flex flex-col pt-[max(1.5rem,env(safe-area-inset-top))] pb-6 md:py-6 flex-shrink-0 bg-background md:bg-glass-panel/30 backdrop-blur-2xl transition-all duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl md:shadow-none`}>
+        <aside className={`fixed md:static inset-y-0 left-0 z-50 h-dvh md:h-auto ${asideWidth} border-r border-glass-border flex flex-col pt-[max(1.5rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:py-6 flex-shrink-0 overflow-hidden bg-background md:bg-glass-panel/30 backdrop-blur-2xl transition-transform duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl md:shadow-none`}>
             
             <div className={`flex items-center ${isDesktopExpanded ? 'justify-between px-6' : 'justify-center'} mb-8 w-full`}>
               <Menu 
@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             
             {/* Mobile Overlay */}
             {isMobileOpen && (
-              <div className="absolute inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity" onClick={() => setIsMobileOpen(false)} />
+              <div className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity" onClick={() => setIsMobileOpen(false)} />
             )}
 
             {/* Header */}
