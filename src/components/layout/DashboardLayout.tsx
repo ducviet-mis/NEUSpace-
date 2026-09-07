@@ -144,14 +144,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const activeIndicatorClass = "absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)] rounded-r-full";
 
   return (
-    <div className="h-dvh w-screen overflow-hidden flex bg-background">
+    <div className="min-h-dvh md:h-dvh w-screen overflow-x-hidden md:overflow-hidden flex bg-background">
       
       {/* Decorative Background Meshes for Liquid Glassmorphism */}
       <div className="fixed top-10 left-1/3 w-96 h-96 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 blur-[100px] pointer-events-none z-0 transition-colors duration-1000"></div>
       <div className="fixed bottom-0 right-10 w-[500px] h-[500px] rounded-full bg-blue-400/10 dark:bg-indigo-500/20 blur-[120px] pointer-events-none z-0 transition-colors duration-1000"></div>
 
       {/* Main Desktop App Window */}
-      <div className="w-full h-full min-h-0 flex overflow-hidden relative z-10">
+      <div className="w-full min-h-dvh md:h-full flex overflow-visible md:overflow-hidden relative z-10">
         
         {/* Sidebar */}
         <aside className={`absolute md:static inset-y-0 left-0 z-50 ${asideWidth} border-r border-glass-border flex flex-col pt-[max(1.5rem,env(safe-area-inset-top))] pb-6 md:py-6 flex-shrink-0 bg-background md:bg-glass-panel/30 backdrop-blur-2xl transition-all duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl md:shadow-none`}>
@@ -192,7 +192,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </aside>
 
         {/* Main Content Area */}
-        <div className="flex-1 min-h-0 flex flex-col h-full overflow-hidden text-foreground relative">
+        <div className="flex-1 min-w-0 min-h-dvh md:min-h-0 flex flex-col md:h-full md:overflow-hidden text-foreground relative">
             
             {/* Mobile Overlay */}
             {isMobileOpen && (
@@ -338,7 +338,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </header>
 
             {/* Scrollable Content */}
-            <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:p-8 scroll-smooth no-scrollbar">
+            <main className="w-full touch-pan-y p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:flex-1 md:min-h-0 md:overflow-y-auto md:p-8 scroll-smooth no-scrollbar">
               {children}
             </main>
         </div>

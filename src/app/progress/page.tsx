@@ -267,6 +267,7 @@ export default function ProgressPage() {
                         const grade = grades[s.subjectCode];
                         const isSaving = savingState[s.subjectCode];
                         const isSaved = savedState[s.subjectCode];
+                        const isPersisted = Boolean(grade?.id);
                         const hasSaveError = saveErrorState[s.subjectCode];
                         const isCompleted = grade?.score_10 !== null && grade?.score_10 !== undefined;
                         
@@ -322,7 +323,7 @@ export default function ProgressPage() {
                                 <span className="inline-flex items-center gap-1.5 text-xs text-brand-cyan whitespace-nowrap">
                                   <Loader2 size={16} className="animate-spin" /> Đang lưu
                                 </span>
-                              ) : isSaved ? (
+                              ) : isSaved || isPersisted ? (
                                 <span className="inline-flex items-center gap-1.5 text-xs text-green-500 whitespace-nowrap">
                                   <CheckCircle size={16} /> Đã lưu
                                 </span>
