@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import curriculumData from '@/data/curriculum.json';
 import { supabase } from '@/lib/supabase';
-import { BookOpen, CheckCircle, Save, Loader2, AlertCircle } from 'lucide-react';
+import { BookOpen, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { roundNeuFinalScore, roundNeuTestScore, convertScore } from '@/utils/neuLogic';
 
 interface Subject {
@@ -43,6 +43,13 @@ export default function ProgressPage() {
   
   // Saving states per subject
   const [savingState, setSavingState] = useState<Record<string, boolean>>({});
+  const [savedState, setSavedState] = useState<Record<string, boolean>>({});
+  const [saveErrorState, setSaveErrorState] = useState<Record<string, boolean>>({});
+  const autoSaveTimers = useRef<Record<string, number>>({});
+
+  useEffect(() => () => {
+    Object.values(autoSaveTimers.current).forEach(clearTimeout);
+  }, []);
 
   const processedMajors = useMemo(() => {
     return (curriculumData as Major[]).map(m => {
@@ -101,31 +108,9 @@ export default function ProgressPage() {
     }
   };
 
-  const handleScoreChange = (subjectCode: string, credits: number, field: keyof GradeRecord, value: string) => {
-    const numValue = value === '' ? null : parseFloat(value);
-    
-    setGrades(prev => {
-      const current = prev[subjectCode] || { subject_code: subjectCode, credits, score_cc: null, score_gk: null, score_ck: null, score_10: null };
-      const updated = { ...current, [field]: numValue };
-      
-      // Auto-calculate final score if all 3 are present
-      if (updated.score_cc !== null && updated.score_gk !== null && updated.score_ck !== null) {
-        // Assume default NEU weights: 10% CC, 40% GK, 50% CK
-        // Also assume CK is multiple choice (roundNeuTestScore)
-        const ckRounded = roundNeuTestScore(updated.score_ck);
-        const finalScore = updated.score_cc * 0.1 + updated.score_gk * 0.4 + ckRounded * 0.5;
-        updated.score_10 = roundNeuFinalScore(finalScore);
-      } else {
-        updated.score_10 = null;
-      }
-
-      return { ...prev, [subjectCode]: updated };
-    });
-  };
-
-  const saveGrade = async (subjectCode: string) => {
+  const saveGrade = async (subjectCode: string, gradeOverride?: GradeRecord) => {
     if (!userId) return;
-    const grade = grades[subjectCode];
+    const grade = gradeOverride || grades[subjectCode];
     if (!grade) return;
 
     setSavingState(prev => ({ ...prev, [subjectCode]: true }));
@@ -151,14 +136,46 @@ export default function ProgressPage() {
         }).select().single();
         
         if (data) {
-          setGrades(prev => ({ ...prev, [subjectCode]: data as GradeRecord }));
+          setGrades(prev => ({
+            ...prev,
+            [subjectCode]: { ...(prev[subjectCode] || grade), id: (data as GradeRecord).id },
+          }));
         }
       }
+      setSavedState(prev => ({ ...prev, [subjectCode]: true }));
+      setSaveErrorState(prev => ({ ...prev, [subjectCode]: false }));
     } catch (err) {
       console.error(err);
+      setSavedState(prev => ({ ...prev, [subjectCode]: false }));
+      setSaveErrorState(prev => ({ ...prev, [subjectCode]: true }));
     } finally {
       setSavingState(prev => ({ ...prev, [subjectCode]: false }));
     }
+  };
+
+  const handleScoreChange = (subjectCode: string, credits: number, field: keyof GradeRecord, value: string) => {
+    const parsedValue = value === '' ? null : Number(value);
+    const numValue = parsedValue === null || !Number.isFinite(parsedValue)
+      ? null
+      : Math.min(10, Math.max(0, parsedValue));
+    const current = grades[subjectCode] || { subject_code: subjectCode, credits, score_cc: null, score_gk: null, score_ck: null, score_10: null };
+    const updated = { ...current, [field]: numValue };
+
+    if (updated.score_cc !== null && updated.score_gk !== null && updated.score_ck !== null) {
+      const ckRounded = roundNeuTestScore(updated.score_ck);
+      const finalScore = updated.score_cc * 0.1 + updated.score_gk * 0.4 + ckRounded * 0.5;
+      updated.score_10 = roundNeuFinalScore(finalScore);
+    } else {
+      updated.score_10 = null;
+    }
+
+    setGrades(prev => ({ ...prev, [subjectCode]: updated }));
+    setSavedState(prev => ({ ...prev, [subjectCode]: false }));
+    setSaveErrorState(prev => ({ ...prev, [subjectCode]: false }));
+    window.clearTimeout(autoSaveTimers.current[subjectCode]);
+    autoSaveTimers.current[subjectCode] = window.setTimeout(() => {
+      saveGrade(subjectCode, updated);
+    }, 800);
   };
 
   // Group current major's subjects by semester
@@ -193,7 +210,7 @@ export default function ProgressPage() {
           Tiến độ Chương trình đào tạo
         </h1>
         <p className="opacity-70 text-sm max-w-3xl">
-          Cập nhật điểm số theo từng môn học trong chương trình đào tạo của bạn. Những môn chưa nhập điểm sẽ được xem là "Chưa học". Dữ liệu sẽ tự động đồng bộ với tổng tín chỉ và GPA trên Trang chủ.
+          Nhập điểm theo từng môn học. Sau khi bạn dừng nhập, điểm sẽ tự động lưu và đồng bộ với tổng tín chỉ, GPA trên Trang chủ.
         </p>
 
         <div className="mt-6 p-4 rounded-xl bg-background/50 border border-border">
@@ -242,13 +259,15 @@ export default function ProgressPage() {
                         <th className="pb-3 font-medium text-center">GK (40%)</th>
                         <th className="pb-3 font-medium text-center">CK (50%)</th>
                         <th className="pb-3 font-medium text-center">Tổng (Hệ 10)</th>
-                        <th className="pb-3 font-medium text-center">Thao tác</th>
+                        <th className="pb-3 font-medium text-center">Trạng thái</th>
                       </tr>
                     </thead>
                     <tbody>
                       {subjects.map(s => {
                         const grade = grades[s.subjectCode];
                         const isSaving = savingState[s.subjectCode];
+                        const isSaved = savedState[s.subjectCode];
+                        const hasSaveError = saveErrorState[s.subjectCode];
                         const isCompleted = grade?.score_10 !== null && grade?.score_10 !== undefined;
                         
                         return (
@@ -299,14 +318,19 @@ export default function ProgressPage() {
                             </td>
                             
                             <td className="py-4 text-center">
-                              <button 
-                                onClick={() => saveGrade(s.subjectCode)}
-                                disabled={isSaving}
-                                className="p-2 bg-brand-cyan/10 text-brand-cyan rounded-lg hover:bg-brand-cyan hover:text-foreground transition-colors disabled:opacity-50"
-                                title="Lưu điểm"
-                              >
-                                {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                              </button>
+                              {isSaving ? (
+                                <span className="inline-flex items-center gap-1.5 text-xs text-brand-cyan whitespace-nowrap">
+                                  <Loader2 size={16} className="animate-spin" /> Đang lưu
+                                </span>
+                              ) : isSaved ? (
+                                <span className="inline-flex items-center gap-1.5 text-xs text-green-500 whitespace-nowrap">
+                                  <CheckCircle size={16} /> Đã lưu
+                                </span>
+                              ) : hasSaveError ? (
+                                <span className="text-xs text-red-500 whitespace-nowrap">Chưa lưu được</span>
+                              ) : (
+                                <span className="text-xs opacity-50 whitespace-nowrap">Chưa nhập</span>
+                              )}
                             </td>
                           </tr>
                         );

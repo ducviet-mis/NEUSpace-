@@ -151,7 +151,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="fixed bottom-0 right-10 w-[500px] h-[500px] rounded-full bg-blue-400/10 dark:bg-indigo-500/20 blur-[120px] pointer-events-none z-0 transition-colors duration-1000"></div>
 
       {/* Main Desktop App Window */}
-      <div className="w-full h-full flex overflow-hidden relative z-10">
+      <div className="w-full h-full min-h-0 flex overflow-hidden relative z-10">
         
         {/* Sidebar */}
         <aside className={`absolute md:static inset-y-0 left-0 z-50 ${asideWidth} border-r border-glass-border flex flex-col pt-[max(1.5rem,env(safe-area-inset-top))] pb-6 md:py-6 flex-shrink-0 bg-background md:bg-glass-panel/30 backdrop-blur-2xl transition-all duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl md:shadow-none`}>
@@ -192,7 +192,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </aside>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden text-foreground relative">
+        <div className="flex-1 min-h-0 flex flex-col h-full overflow-hidden text-foreground relative">
             
             {/* Mobile Overlay */}
             {isMobileOpen && (
@@ -338,7 +338,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </header>
 
             {/* Scrollable Content */}
-            <main className="flex-1 overflow-y-auto p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:p-8 scroll-smooth no-scrollbar">
+            <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:p-8 scroll-smooth no-scrollbar">
               {children}
             </main>
         </div>

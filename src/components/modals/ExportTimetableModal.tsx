@@ -501,20 +501,20 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-glass-panel backdrop-blur-3xl border border-glass-border rounded-[2rem] p-6 sm:p-8 w-full max-w-6xl h-[90vh] sm:h-[85vh] flex flex-col shadow-2xl relative overflow-hidden">
+      <div className="bg-glass-panel backdrop-blur-3xl border border-glass-border rounded-[2rem] p-4 sm:p-8 w-full max-w-6xl h-[calc(100dvh-1rem)] sm:h-[85vh] flex flex-col shadow-2xl relative overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 flex-shrink-0 relative z-10">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 flex-shrink-0 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30">
+            <div className="hidden sm:flex w-12 h-12 rounded-2xl bg-cyan-500/20 items-center justify-center border border-cyan-500/30">
               <Download className="text-cyan-400" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground tracking-wide">Xuất Thời Khóa Biểu</h2>
-              <p className="text-foreground/60 text-sm">Tùy chỉnh và tải xuống ảnh chất lượng cao hoặc bảng tính CSV.</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-wide">Xuất Thời Khóa Biểu</h2>
+              <p className="text-foreground/60 text-xs sm:text-sm">Xem trước trực tiếp trước khi tải xuống.</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-foreground/50 hover:text-foreground hover:bg-foreground/10 p-2 rounded-full transition-colors">
+          <button onClick={onClose} aria-label="Đóng cửa sổ xuất thời khóa biểu" className="w-11 h-11 text-foreground/50 hover:text-foreground hover:bg-foreground/10 flex items-center justify-center rounded-full transition-colors">
             <X size={24} />
           </button>
         </div>
@@ -523,7 +523,7 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
         <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 relative z-10">
 
           {/* Left: Controls */}
-          <div className="w-full lg:w-[35%] flex flex-col gap-5 overflow-y-auto pr-2 pb-4" style={{ scrollbarWidth: 'none' }}>
+          <div className="order-2 lg:order-1 w-full lg:w-[35%] flex-1 min-h-0 flex flex-col gap-5 overflow-y-auto pr-1 lg:pr-2 pb-4" style={{ scrollbarWidth: 'none' }}>
 
             {/* 1. Format */}
             <div>
@@ -596,7 +596,7 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
           </div>
 
           {/* Right: Preview */}
-          <div className="hidden lg:flex w-full lg:w-[65%] h-full flex-col bg-black/5 dark:bg-black/40 rounded-[2rem] border border-glass-border p-4 relative overflow-hidden items-center justify-center">
+          <div className="order-1 lg:order-2 w-full lg:w-[65%] h-[31vh] min-h-[220px] sm:h-[36vh] lg:h-full lg:min-h-0 flex-shrink-0 flex flex-col bg-black/5 dark:bg-black/40 rounded-2xl lg:rounded-[2rem] border border-glass-border p-3 sm:p-4 relative overflow-hidden items-center justify-center">
 
             {format === 'csv' ? (
               <div className="text-center flex flex-col items-center opacity-70">
@@ -634,8 +634,8 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
             )}
 
             {format !== 'csv' && (
-              <div className="absolute bottom-6 bg-black/60 px-6 py-2 rounded-full text-foreground/60 text-sm backdrop-blur-md">
-                Live Preview (Bản xem trước)
+              <div className="absolute bottom-3 sm:bottom-6 bg-black/60 px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-foreground/80 text-xs sm:text-sm backdrop-blur-md">
+                Xem trước trực tiếp
               </div>
             )}
           </div>
