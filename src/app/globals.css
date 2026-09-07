@@ -36,6 +36,9 @@
 @layer base {
   body {
     @apply bg-background text-foreground antialiased selection:bg-brand-cyan/30 transition-colors duration-500;
+    min-height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
   }
   
   /* Global form styles for glass theme */
@@ -45,6 +48,10 @@
   
   option {
     @apply bg-background text-foreground;
+  }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
   }
 }
 

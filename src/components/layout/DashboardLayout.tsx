@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { 
   Home, Calendar, Calculator, BookOpen, Settings,
   Menu, X, Bell, User, LogOut, HelpCircle, FileText,
-  Moon, Sun, ShoppingBag
+  Moon, Sun, ShoppingBag, MoreHorizontal
 } from 'lucide-react';
 import AuthPage from '@/components/auth/AuthPage';
 import { supabase } from '@/lib/supabase';
@@ -21,6 +21,13 @@ const NAV_ITEMS = [
   { name: 'Lịch thi', href: '/exams', icon: FileText },
   { name: 'Chợ Giáo Trình', href: '/market', icon: ShoppingBag },
   { name: 'Song ngành', href: '/double-major', icon: BookOpen },
+];
+
+const MOBILE_NAV_ITEMS = [
+  { name: 'Trang chủ', href: '/', icon: Home },
+  { name: 'Tiến độ', href: '/progress', icon: BookOpen },
+  { name: 'Tính GPA', href: '/gpa', icon: Calculator },
+  { name: 'Lịch học', href: '/timetable', icon: Calendar },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -137,7 +144,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const activeIndicatorClass = "absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)] rounded-r-full";
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex bg-background">
+    <div className="h-dvh w-screen overflow-hidden flex bg-background">
       
       {/* Decorative Background Meshes for Liquid Glassmorphism */}
       <div className="fixed top-10 left-1/3 w-96 h-96 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 blur-[100px] pointer-events-none z-0 transition-colors duration-1000"></div>
@@ -147,7 +154,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="w-full h-full flex overflow-hidden relative z-10">
         
         {/* Sidebar */}
-        <aside className={`absolute md:static inset-y-0 left-0 z-50 ${asideWidth} border-r border-glass-border flex flex-col py-6 flex-shrink-0 bg-background md:bg-glass-panel/30 backdrop-blur-2xl transition-all duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl md:shadow-none`}>
+        <aside className={`absolute md:static inset-y-0 left-0 z-50 ${asideWidth} border-r border-glass-border flex flex-col pt-[max(1.5rem,env(safe-area-inset-top))] pb-6 md:py-6 flex-shrink-0 bg-background md:bg-glass-panel/30 backdrop-blur-2xl transition-all duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} shadow-2xl md:shadow-none`}>
             
             <div className={`flex items-center ${isDesktopExpanded ? 'justify-between px-6' : 'justify-center'} mb-8 w-full`}>
               <Menu 
@@ -169,7 +176,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
                 return (
-                  <Link key={item.href} href={item.href} className="w-full relative group" onClick={() => setIsMobileOpen(false)}>
+                  <Link key={item.href} href={item.href} className="w-full relative group" onClick={() => setIsMobileOpen(false)} aria-current={isActive ? 'page' : undefined}>
                     {isActive && <div className={activeIndicatorClass} />}
                     <div className={`p-3 rounded-xl transition-all flex items-center ${itemWrapperClass} ${isActive ? 'bg-gradient-to-r from-red-500 to-rose-500 shadow-lg shadow-red-500/30 text-white' : 'text-foreground/60 hover:bg-foreground/10 hover:text-foreground'}`} title={!isDesktopExpanded ? item.name : undefined}>
                       <Icon size={24} strokeWidth={isActive ? 2.5 : 2} className="flex-shrink-0" />
@@ -193,9 +200,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}
 
             {/* Header */}
-            <header className="h-20 md:h-24 border-b border-glass-border flex items-center justify-between px-4 md:px-8 flex-shrink-0 bg-glass-panel/50 backdrop-blur-2xl z-20 transition-colors duration-500">
-              <div className="flex items-center gap-4">
-                <button className="md:hidden text-foreground/70 hover:text-foreground p-2" onClick={() => setIsMobileOpen(true)}>
+            <header className="h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:h-24 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 md:px-8 flex-shrink-0 bg-glass-panel/50 backdrop-blur-2xl z-20 transition-colors duration-500">
+              <div className="flex items-center gap-2.5 md:gap-4 min-w-0">
+                <button className="md:hidden w-11 h-11 text-foreground/70 hover:text-foreground active:bg-foreground/10 rounded-xl transition-colors flex items-center justify-center" onClick={() => setIsMobileOpen(true)} aria-label="Mở menu">
                   <Menu size={24} />
                 </button>
                 <img
@@ -208,7 +215,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </h1>
               </div>
 
-              <div className="flex items-center gap-4 md:gap-6">
+              <div className="flex items-center gap-1 md:gap-6">
                 
                 <button className="text-foreground/70 hover:text-foreground transition-colors hidden sm:block">
                   <HelpCircle size={22} />
@@ -218,8 +225,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {mounted && (
                   <button 
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    className="text-foreground/70 hover:text-foreground transition-colors"
+                    className="w-11 h-11 text-foreground/70 hover:text-foreground active:bg-foreground/10 rounded-xl transition-colors flex items-center justify-center"
                     title={theme === 'dark' ? 'Chuyển sang nền sáng' : 'Chuyển sang nền tối'}
+                    aria-label={theme === 'dark' ? 'Chuyển sang nền sáng' : 'Chuyển sang nền tối'}
                   >
                     {theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
                   </button>
@@ -227,8 +235,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 
                 <div className="relative flex items-center">
                   <button 
-                    className="text-foreground/70 hover:text-foreground transition-colors relative flex items-center justify-center"
+                    className="w-11 h-11 text-foreground/70 hover:text-foreground active:bg-foreground/10 rounded-xl transition-colors relative flex items-center justify-center"
                     onClick={() => setShowNotifications(!showNotifications)}
+                    aria-label={unreadCount > 0 ? `Thông báo, ${unreadCount} chưa đọc` : 'Thông báo'}
                   >
                     <Bell size={22} />
                     {unreadCount > 0 && (
@@ -290,7 +299,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 
                 {/* Avatar */}
                 <div className="relative">
-                  <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
+                  <button className="w-11 h-11 flex items-center justify-center cursor-pointer hover:opacity-80 active:bg-foreground/10 rounded-xl transition-opacity" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} aria-label="Mở menu tài khoản" aria-expanded={isUserMenuOpen}>
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="Avatar" className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-glass-border object-cover shadow-lg" />
                     ) : (
@@ -298,7 +307,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         {profile?.full_name?.charAt(0) || 'U'}
                       </div>
                     )}
-                  </div>
+                  </button>
                   
                   {isUserMenuOpen && (
                     <>
@@ -329,11 +338,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </header>
 
             {/* Scrollable Content */}
-            <main className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth no-scrollbar">
+            <main className="flex-1 overflow-y-auto p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:p-8 scroll-smooth no-scrollbar">
               {children}
             </main>
         </div>
       </div>
+      <nav className="fixed md:hidden inset-x-0 bottom-0 z-30 border-t border-glass-border bg-background/90 backdrop-blur-2xl px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]" aria-label="Điều hướng chính">
+        <div className="grid grid-cols-5 max-w-md mx-auto gap-1">
+          {MOBILE_NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+            return (
+              <Link key={item.href} href={item.href} aria-current={isActive ? 'page' : undefined} className={`min-h-12 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${isActive ? 'bg-cyan-500/15 text-cyan-500 dark:text-cyan-300' : 'text-foreground/60 active:bg-foreground/10'}`}>
+                <Icon size={21} strokeWidth={isActive ? 2.5 : 2} />
+                <span className="leading-none">{item.name}</span>
+              </Link>
+            );
+          })}
+          <button type="button" onClick={() => setIsMobileOpen(true)} aria-label="Mở thêm chức năng" className="min-h-12 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-foreground/60 active:bg-foreground/10 transition-colors">
+            <MoreHorizontal size={22} />
+            <span className="leading-none">Thêm</span>
+          </button>
+        </div>
+      </nav>
       <style dangerouslySetInnerHTML={{__html: `
         .no-scrollbar::-webkit-scrollbar {
           display: none;
