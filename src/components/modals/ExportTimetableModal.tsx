@@ -484,10 +484,44 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
           style: { transform: 'none' },
         });
 
+        const response = await fetch(dataUrl);
+        const imageBlob = await response.blob();
+        const imageFile = new File(
+          [imageBlob],
+          `${fileNameBase}_${format}.jpg`,
+          { type: 'image/jpeg' }
+        );
+
+        // On an installed iPhone/iPad PWA, this opens the native share sheet
+        // so students can choose "Save Image" directly into Photos. Browsers
+        // intentionally do not permit a website to write to Photos silently.
+        const canShareFile = typeof navigator.share === 'function'
+          && (typeof navigator.canShare !== 'function'
+            || navigator.canShare({ files: [imageFile] }));
+
+        if (canShareFile) {
+          try {
+            await navigator.share({
+              files: [imageFile],
+              title: 'Thời khóa biểu NEU SPACE',
+            });
+            return;
+          } catch (shareError) {
+            // Closing the native sheet is an intentional cancellation, not an error.
+            if (shareError instanceof DOMException && shareError.name === 'AbortError') {
+              return;
+            }
+            console.warn('Native image sharing unavailable, using download instead.', shareError);
+          }
+        }
+
+        // Desktop and older browsers retain the familiar direct-download fallback.
+        const objectUrl = URL.createObjectURL(imageFile);
         const link = document.createElement('a');
-        link.download = `${fileNameBase}_${format}.jpg`;
-        link.href = dataUrl;
+        link.download = imageFile.name;
+        link.href = objectUrl;
         link.click();
+        window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1_000);
       }
     } catch (err) {
       console.error('Export error:', err);
@@ -595,8 +629,13 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
               <button onClick={handleExport} disabled={isExporting}
                 className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-foreground font-bold py-4 px-6 rounded-2xl shadow-[0_8px_25px_rgba(6,182,212,0.4)] transition-all flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-60">
                 {isExporting ? <Loader2 size={24} className="animate-spin" /> : <Download size={24} />}
-                {isExporting ? 'Đang xử lý...' : 'Tải Xuống Ngay'}
+                {isExporting ? 'Đang xử lý...' : format === 'csv' ? 'Tải bảng tính' : 'Lưu ảnh / Chia sẻ'}
               </button>
+              {format !== 'csv' && (
+                <p className="mt-2 text-center text-xs text-foreground/55">
+                  Trên iPhone, chọn “Lưu ảnh” trong bảng Chia sẻ.
+                </p>
+              )}
             </div>
           </div>
 
