@@ -484,10 +484,16 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
           style: { transform: 'none' },
         });
 
-        const response = await fetch(dataUrl);
-        const imageBlob = await response.blob();
+        // Do not fetch the data URL here: some Android WebViews block data: URLs
+        // under their security policy. Decoding it locally works in browsers and PWAs.
+        const base64Image = dataUrl.slice(dataUrl.indexOf(',') + 1);
+        const binaryImage = window.atob(base64Image);
+        const imageBytes = new Uint8Array(binaryImage.length);
+        for (let index = 0; index < binaryImage.length; index += 1) {
+          imageBytes[index] = binaryImage.charCodeAt(index);
+        }
         const imageFile = new File(
-          [imageBlob],
+          [imageBytes],
           `${fileNameBase}_${format}.jpg`,
           { type: 'image/jpeg' }
         );
