@@ -2,9 +2,10 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Package, PackageOpen, PlusCircle, Search, Shirt, ShoppingBag, Tag } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Package, PackageOpen, PlusCircle, Search, Shirt, ShoppingBag, Tag } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import BookListingCard, { BookListing } from '@/components/market/BookListingCard';
+import curriculumData from '@/data/curriculum.json';
 
 type Category = 'all' | 'textbook' | 'uniform' | 'other';
 
@@ -15,12 +16,33 @@ const CATEGORIES: Array<{ id: Category; label: string; icon: typeof BookOpen }> 
   { id: 'other', label: 'Đồ dùng khác', icon: Package },
 ];
 
+const COURSE_PAGE_SIZE = 12;
+
+const getUniqueSubjects = () => {
+  const subjectsMap = new Map<string, { name: string; code: string }>();
+  curriculumData.forEach((major: any) => {
+    const majorCode = major.majorName.split(' - ').pop()?.trim() || '';
+    if (!/^\d/.test(majorCode)) return;
+
+    major.subjects?.forEach((subject: any) => {
+      const code = (subject.subjectCode || '').toUpperCase();
+      const name = (subject.name || '').toLowerCase();
+      if (code.startsWith('EP') || code.startsWith('AEP') || code.startsWith('EBBA') || code.startsWith('POHE') || code.startsWith('BBAE') || code.startsWith('ESOM') || name.includes('khóa luận tốt nghiệp') || name.includes('khoá luận tốt nghiệp') || name.includes('chuyên đề thực tập') || name.includes('chuyên đề thực tế') || name.includes('thực tập tốt nghiệp')) return;
+      if (!subjectsMap.has(code)) subjectsMap.set(code, { name: subject.name, code });
+    });
+  });
+  return Array.from(subjectsMap.values());
+};
+
+const uniqueSubjects = getUniqueSubjects();
+
 export default function MarketPage() {
   const [listings, setListings] = useState<BookListing[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [isFreeOnly, setIsFreeOnly] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [subjectPage, setSubjectPage] = useState(1);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -49,6 +71,31 @@ export default function MarketPage() {
         .some(value => value?.toLowerCase().includes(query));
     });
   }, [listings, activeCategory, isFreeOnly, searchTerm]);
+
+  const filteredSubjects = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    const subjectCounts = listings.reduce<Record<string, number>>((counts, listing) => {
+      if ((listing.category ?? 'textbook') !== 'textbook' || (isFreeOnly && listing.price !== 0)) return counts;
+      counts[listing.subject_name ?? ''] = (counts[listing.subject_name ?? ''] || 0) + 1;
+      return counts;
+    }, {});
+    return uniqueSubjects
+      .filter(subject => !query || subject.name.toLowerCase().includes(query) || subject.code.toLowerCase().includes(query))
+      .sort((a, b) => (subjectCounts[b.name] ?? 0) - (subjectCounts[a.name] ?? 0) || a.name.localeCompare(b.name));
+  }, [listings, isFreeOnly, searchTerm]);
+
+  const subjectCounts = useMemo(() => listings.reduce<Record<string, number>>((counts, listing) => {
+    if ((listing.category ?? 'textbook') !== 'textbook' || (isFreeOnly && listing.price !== 0)) return counts;
+    counts[listing.subject_name ?? ''] = (counts[listing.subject_name ?? ''] || 0) + 1;
+    return counts;
+  }, {}), [listings, isFreeOnly]);
+
+  const totalSubjectPages = Math.ceil(filteredSubjects.length / COURSE_PAGE_SIZE);
+  const paginatedSubjects = filteredSubjects.slice((subjectPage - 1) * COURSE_PAGE_SIZE, subjectPage * COURSE_PAGE_SIZE);
+
+  useEffect(() => {
+    setSubjectPage(1);
+  }, [searchTerm, isFreeOnly]);
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12 animate-in fade-in duration-500">
@@ -80,6 +127,41 @@ export default function MarketPage() {
           <button onClick={() => setIsFreeOnly(value => !value)} aria-pressed={isFreeOnly} className={`min-h-11 px-4 rounded-xl border text-sm font-medium flex items-center justify-center gap-2 transition-colors ${isFreeOnly ? 'bg-rose-500 text-white border-rose-500' : 'bg-background border-border text-foreground/70 hover:bg-foreground/5'}`}><Tag size={16} /> Chỉ xem 0đ</button>
         </div>
       </section>
+
+      {(activeCategory === 'all' || activeCategory === 'textbook') && (
+        <section className="space-y-4">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold flex items-center gap-2"><BookOpen size={21} className="text-cyan-500" /> Duyệt giáo trình theo môn học</h2>
+              <p className="text-sm opacity-65 mt-1">Danh sách đầy đủ môn học và mã môn, giống phần Giáo trình trước đây.</p>
+            </div>
+            <span className="text-xs font-medium opacity-60 whitespace-nowrap">{filteredSubjects.length} môn</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {paginatedSubjects.map(subject => {
+              const count = subjectCounts[subject.name] ?? 0;
+              return (
+                <Link href={`/market/${encodeURIComponent(subject.name)}`} key={subject.code} className="glass-panel min-h-28 p-4 flex flex-col justify-between hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(6,182,212,0.12)] transition-all group">
+                  <div>
+                    <span className="inline-block px-2 py-1 rounded-md bg-foreground/5 text-xs font-bold text-foreground/60 mb-2">{subject.code}</span>
+                    <h3 className="font-semibold text-sm leading-snug group-hover:text-cyan-500 transition-colors line-clamp-2">{subject.name}</h3>
+                  </div>
+                  <div className="mt-3 text-xs">{count > 0 ? <span className="text-cyan-500 font-semibold">{count} tin đang bán</span> : <span className="opacity-50">Chưa có tin đăng</span>}</div>
+                </Link>
+              );
+            })}
+          </div>
+
+          {totalSubjectPages > 1 && (
+            <div className="flex items-center justify-center gap-3">
+              <button onClick={() => setSubjectPage(page => Math.max(1, page - 1))} disabled={subjectPage === 1} aria-label="Trang môn học trước" className="w-11 h-11 rounded-xl bg-background border border-border disabled:opacity-40 flex items-center justify-center hover:bg-foreground/5"><ChevronLeft size={19} /></button>
+              <span className="text-sm opacity-70">Trang {subjectPage}/{totalSubjectPages}</span>
+              <button onClick={() => setSubjectPage(page => Math.min(totalSubjectPages, page + 1))} disabled={subjectPage === totalSubjectPages} aria-label="Trang môn học tiếp" className="w-11 h-11 rounded-xl bg-background border border-border disabled:opacity-40 flex items-center justify-center hover:bg-foreground/5"><ChevronRight size={19} /></button>
+            </div>
+          )}
+        </section>
+      )}
 
       {loading ? (
         <div className="flex justify-center items-center h-64"><div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin" /></div>
