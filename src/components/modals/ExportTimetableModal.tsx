@@ -475,15 +475,17 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
       } else {
         if (!exportCanvasRef.current) return;
 
-        const dataUrl = await htmlToImage.toPng(exportCanvasRef.current, {
-          pixelRatio: 2,
-          quality: 1,
+        // 1920×1080 / 1080×1920 is already crisp on phone screens. JPEG at
+        // high quality avoids the very large, lossless PNG files created at 2×.
+        const dataUrl = await htmlToImage.toJpeg(exportCanvasRef.current, {
+          pixelRatio: 1,
+          quality: 0.92,
           cacheBust: true,
           style: { transform: 'none' },
         });
 
         const link = document.createElement('a');
-        link.download = `${fileNameBase}_${format}.png`;
+        link.download = `${fileNameBase}_${format}.jpg`;
         link.href = dataUrl;
         link.click();
       }
@@ -545,6 +547,9 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
                   <span className="text-sm font-bold">Bảng tính CSV (mở bằng Excel)</span>
                 </button>
               </div>
+              {format !== 'csv' && (
+                <p className="mt-2 text-xs text-foreground/55">Ảnh JPEG chất lượng cao, tối ưu dung lượng khi tải về điện thoại.</p>
+              )}
             </div>
 
             {/* 2. Theme */}
