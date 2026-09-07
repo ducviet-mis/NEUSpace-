@@ -84,7 +84,7 @@ export default function SellPage() {
 
   const itemTypeOptions = {
     textbook: ['Giáo trình gốc', 'Bản photo', 'Tài liệu / đề cương khác'],
-    uniform: ['Áo đồng phục', 'Áo khoác', 'Quần / váy', 'Phụ kiện đồng phục'],
+    uniform: ['Áo khoác đồng phục', 'Đồng phục thể chất', 'Áo khoa', 'Khác'],
     other: ['Đồ điện tử', 'Đồ học tập', 'Đồ sinh hoạt', 'Khác'],
   } as const;
 
@@ -368,7 +368,7 @@ export default function SellPage() {
               value={notes}
               onChange={e => setNotes(e.target.value)}
               className="w-full bg-background/50 border border-border rounded-xl p-3 outline-none focus:border-cyan-500/50 transition-colors min-h-[100px] resize-y"
-              placeholder="Có note chữ vào sách, bọc plastic cẩn thận..."
+              placeholder={category === 'uniform' ? 'Vui lòng ghi rõ size.' : category === 'other' ? 'Cụ thể tình trạng, mô tả chi tiết,...' : 'Có note chữ vào sách, bọc plastic cẩn thận...'}
             ></textarea>
           </div>
 
