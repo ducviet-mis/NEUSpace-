@@ -7,10 +7,9 @@ import { supabase } from '@/lib/supabase';
 import BookListingCard, { BookListing } from '@/components/market/BookListingCard';
 import curriculumData from '@/data/curriculum.json';
 
-type Category = 'all' | 'textbook' | 'uniform' | 'other';
+type Category = 'textbook' | 'uniform' | 'other';
 
 const CATEGORIES: Array<{ id: Category; label: string; icon: typeof BookOpen }> = [
-  { id: 'all', label: 'Tất cả', icon: ShoppingBag },
   { id: 'textbook', label: 'Giáo trình', icon: BookOpen },
   { id: 'uniform', label: 'Đồng phục', icon: Shirt },
   { id: 'other', label: 'Đồ dùng khác', icon: Package },
@@ -38,7 +37,7 @@ const uniqueSubjects = getUniqueSubjects();
 
 export default function MarketPage() {
   const [listings, setListings] = useState<BookListing[]>([]);
-  const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [activeCategory, setActiveCategory] = useState<Category>('textbook');
   const [searchTerm, setSearchTerm] = useState('');
   const [isFreeOnly, setIsFreeOnly] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -64,7 +63,7 @@ export default function MarketPage() {
     const query = searchTerm.trim().toLowerCase();
     return listings.filter(listing => {
       const category = listing.category ?? 'textbook';
-      if (activeCategory !== 'all' && category !== activeCategory) return false;
+      if (category !== activeCategory) return false;
       if (isFreeOnly && listing.price !== 0) return false;
       if (!query) return true;
       return [listing.subject_name, listing.book_type, listing.notes]
@@ -128,12 +127,12 @@ export default function MarketPage() {
         </div>
       </section>
 
-      {(activeCategory === 'all' || activeCategory === 'textbook') && (
+      {activeCategory === 'textbook' && (
         <section className="space-y-4">
           <div className="flex items-end justify-between gap-4">
             <div>
               <h2 className="text-xl font-bold flex items-center gap-2"><BookOpen size={21} className="text-cyan-500" /> Duyệt giáo trình theo môn học</h2>
-              <p className="text-sm opacity-65 mt-1">Danh sách đầy đủ môn học và mã môn, giống phần Giáo trình trước đây.</p>
+              <p className="text-sm opacity-65 mt-1">Chọn môn học để xem các giáo trình đang được đăng bán.</p>
             </div>
             <span className="text-xs font-medium opacity-60 whitespace-nowrap">{filteredSubjects.length} môn</span>
           </div>
