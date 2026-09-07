@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex-1 min-w-0 min-h-dvh md:min-h-0 flex flex-col md:h-full md:overflow-hidden text-foreground relative">
             
             {/* Header */}
-            <header className="h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:h-24 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 md:px-8 flex-shrink-0 bg-glass-panel/50 backdrop-blur-2xl z-20 transition-colors duration-500">
+            <header className="sticky top-0 z-30 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:static md:z-20 md:h-24 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 md:px-8 flex-shrink-0 bg-glass-panel/50 backdrop-blur-2xl transition-colors duration-500">
               <div className="flex items-center gap-2.5 md:gap-4 min-w-0">
                 <button className="md:hidden w-11 h-11 text-foreground/70 hover:text-foreground active:bg-foreground/10 rounded-xl transition-colors flex items-center justify-center" onClick={() => setIsMobileOpen(true)} aria-label="Mở menu">
                   <Menu size={24} />
