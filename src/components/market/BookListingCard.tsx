@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Phone, BookOpen, Clock, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Phone, BookOpen, Clock, Tag, ChevronLeft, ChevronRight, Package, Shirt } from 'lucide-react';
 
 export interface BookListing {
   id: string;
+  subject_name?: string;
+  category?: 'textbook' | 'uniform' | 'other' | null;
   image_urls: string[];
   book_type: string;
   condition: string;
@@ -37,6 +39,8 @@ export default function BookListingCard({ listing }: { listing: BookListing }) {
 
   const isFree = listing.price === 0;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const categoryLabel = listing.category === 'uniform' ? 'Đồng phục' : listing.category === 'other' ? 'Đồ dùng khác' : 'Giáo trình';
+  const CategoryIcon = listing.category === 'uniform' ? Shirt : listing.category === 'other' ? Package : BookOpen;
 
   return (
     <>
@@ -51,7 +55,7 @@ export default function BookListingCard({ listing }: { listing: BookListing }) {
             <>
               <img 
                 src={listing.image_urls[currentImgIndex]} 
-                alt="Book" 
+                alt={listing.subject_name || categoryLabel}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               {listing.image_urls.length > 1 && (
@@ -84,12 +88,14 @@ export default function BookListingCard({ listing }: { listing: BookListing }) {
         <div className="p-5 flex-1 flex flex-col">
           <div className="flex items-center gap-2 text-xs font-medium mb-3">
             <span className="px-2 py-1 bg-foreground/5 rounded text-foreground/70 flex items-center gap-1.5">
-              <BookOpen size={12} /> {listing.book_type}
+              <CategoryIcon size={12} /> {categoryLabel}
             </span>
             <span className="px-2 py-1 bg-foreground/5 rounded text-foreground/70 flex items-center gap-1.5">
               <Tag size={12} /> {listing.condition}
             </span>
           </div>
+
+          {listing.subject_name && <h3 className="font-semibold leading-snug mb-2 line-clamp-2">{listing.subject_name}</h3>}
 
           {listing.notes && (
             <p className="text-sm opacity-80 line-clamp-3 mb-4 leading-relaxed flex-1">
@@ -134,7 +140,7 @@ export default function BookListingCard({ listing }: { listing: BookListing }) {
                 <>
                   <img 
                     src={listing.image_urls[currentImgIndex]} 
-                    alt="Book Full" 
+                    alt={listing.subject_name || categoryLabel}
                     className="w-full h-full object-contain p-2"
                   />
                   {listing.image_urls.length > 1 && (
@@ -168,14 +174,17 @@ export default function BookListingCard({ listing }: { listing: BookListing }) {
             {/* Cột phải: Thông tin chi tiết */}
             <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col overflow-y-auto max-h-[50vh] md:max-h-none">
               <div className="mb-6">
-                <h2 className="text-2xl font-bold mb-3 pr-8">Thông tin Tài liệu</h2>
+                <h2 className="text-2xl font-bold mb-3 pr-8">{listing.subject_name || 'Thông tin món đồ'}</h2>
                 <div className={`inline-block px-4 py-1.5 rounded-full text-lg font-bold shadow-md mb-4 ${isFree ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white' : 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30'}`}>
                   {formatPrice(listing.price)}
                 </div>
                 
                 <div className="flex flex-wrap gap-2 text-sm font-medium mb-4">
                   <span className="px-3 py-1.5 bg-foreground/5 rounded-lg text-foreground/80 flex items-center gap-2">
-                    <BookOpen size={14} /> {listing.book_type}
+                    <CategoryIcon size={14} /> {categoryLabel}
+                  </span>
+                  <span className="px-3 py-1.5 bg-foreground/5 rounded-lg text-foreground/80 flex items-center gap-2">
+                    <Tag size={14} /> {listing.book_type}
                   </span>
                   <span className="px-3 py-1.5 bg-foreground/5 rounded-lg text-foreground/80 flex items-center gap-2">
                     <Tag size={14} /> {listing.condition}

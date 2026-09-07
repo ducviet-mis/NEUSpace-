@@ -41,7 +41,7 @@ export default function MyListingsPage() {
   }, []);
 
   const markAsSold = async (id: string) => {
-    if (!confirm('Bạn chắc chắn đã bán quyển sách này? Bài đăng sẽ bị ẩn đi.')) return;
+    if (!confirm('Bạn chắc chắn đã bán món đồ này? Bài đăng sẽ bị ẩn đi.')) return;
     try {
       await supabase.from('book_listings').update({ status: 'sold' }).eq('id', id);
       setListings(listings.map(l => l.id === id ? { ...l, status: 'sold' } : l));
@@ -70,7 +70,7 @@ export default function MyListingsPage() {
 
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-2">Quản lý Tin đăng của tôi</h1>
-        <p className="opacity-70 text-sm">Xem và quản lý các giáo trình, tài liệu bạn đang bán.</p>
+        <p className="opacity-70 text-sm">Xem và quản lý giáo trình, đồng phục và đồ dùng bạn đang bán.</p>
       </div>
 
       {loading ? (
@@ -84,8 +84,8 @@ export default function MyListingsPage() {
       ) : listings.length === 0 ? (
         <div className="glass-panel p-16 flex flex-col items-center justify-center text-center">
           <PackageOpen size={48} className="text-foreground/20 mb-4" />
-          <h3 className="text-xl font-bold mb-2">Bạn chưa đăng bán sách nào</h3>
-          <p className="opacity-70 text-sm mb-6">Hãy đăng bán những giáo trình cũ không dùng đến để giúp đỡ các bạn khóa sau nhé!</p>
+          <h3 className="text-xl font-bold mb-2">Bạn chưa có tin đăng nào</h3>
+          <p className="opacity-70 text-sm mb-6">Bạn có thể đăng giáo trình, đồng phục hoặc đồ dùng không còn sử dụng.</p>
           <Link href="/market/sell" className="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-white rounded-xl font-medium transition-colors">
             Đăng bán ngay
           </Link>
@@ -96,7 +96,7 @@ export default function MyListingsPage() {
             <div key={listing.id} className={`glass-panel p-4 flex flex-col md:flex-row gap-6 items-center ${listing.status !== 'available' ? 'opacity-60' : ''}`}>
               <div className="w-full md:w-32 h-32 bg-background/50 rounded-xl overflow-hidden flex-shrink-0">
                 {listing.image_urls && listing.image_urls[0] ? (
-                  <img src={listing.image_urls[0]} alt="Book" className="w-full h-full object-cover" />
+                  <img src={listing.image_urls[0]} alt={listing.subject_name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-foreground/20">No Image</div>
                 )}
@@ -113,6 +113,7 @@ export default function MyListingsPage() {
                     {listing.status === 'available' ? 'Đang bán' : listing.status === 'sold' ? 'Đã bán' : 'Hết hạn'}
                   </span>
                 </div>
+                <p className="text-xs font-medium text-foreground/60 mb-2">{listing.category === 'uniform' ? 'Đồng phục' : listing.category === 'other' ? 'Đồ dùng khác' : 'Giáo trình'} · {listing.book_type}</p>
                 
                 <p className="text-sm opacity-70 mb-1">Giá: <strong className="text-foreground">{listing.price === 0 ? 'Tặng miễn phí' : new Intl.NumberFormat('vi-VN').format(listing.price) + 'đ'}</strong></p>
                 <p className="text-sm opacity-70 mb-4">Ngày đăng: {new Date(listing.created_at).toLocaleDateString('vi-VN')}</p>

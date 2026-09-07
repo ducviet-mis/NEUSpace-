@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import curriculumData from '@/data/curriculum.json';
-import { Upload, X, Loader2, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, Loader2, ArrowLeft, Image as ImageIcon, BookOpen, Shirt, Package } from 'lucide-react';
 import Link from 'next/link';
 import { createUserScopedImagePath, validateImageSelection } from '@/lib/uploadValidation';
 
@@ -13,7 +13,8 @@ export default function SellPage() {
   const [user, setUser] = useState<any>(null);
   
   const [subject, setSubject] = useState('');
-  const [bookType, setBookType] = useState('Chính thống');
+  const [category, setCategory] = useState<'textbook' | 'uniform' | 'other'>('textbook');
+  const [bookType, setBookType] = useState('Giáo trình gốc');
   const [condition, setCondition] = useState('Khá mới');
   const [price, setPrice] = useState('');
   const [isFree, setIsFree] = useState(false);
@@ -74,6 +75,26 @@ export default function SellPage() {
     if (!subjectSearch.trim()) return [];
     return uniqueSubjects.filter(s => s.toLowerCase().includes(subjectSearch.toLowerCase())).slice(0, 5);
   }, [subjectSearch, uniqueSubjects]);
+
+  const categoryOptions = [
+    { id: 'textbook' as const, label: 'Giáo trình & tài liệu', icon: BookOpen },
+    { id: 'uniform' as const, label: 'Đồng phục', icon: Shirt },
+    { id: 'other' as const, label: 'Đồ dùng khác', icon: Package },
+  ];
+
+  const itemTypeOptions = {
+    textbook: ['Giáo trình gốc', 'Bản photo', 'Tài liệu / đề cương khác'],
+    uniform: ['Áo đồng phục', 'Áo khoác', 'Quần / váy', 'Phụ kiện đồng phục'],
+    other: ['Đồ điện tử', 'Đồ học tập', 'Đồ sinh hoạt', 'Khác'],
+  } as const;
+
+  const changeCategory = (nextCategory: 'textbook' | 'uniform' | 'other') => {
+    setCategory(nextCategory);
+    setBookType(itemTypeOptions[nextCategory][0]);
+    setSubject('');
+    setSubjectSearch('');
+    setShowSuggestions(false);
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -143,7 +164,7 @@ export default function SellPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subject) return setError('Vui lòng chọn môn học');
+    if (!subject.trim()) return setError(category === 'textbook' ? 'Vui lòng nhập tên giáo trình hoặc môn học' : 'Vui lòng nhập tên món đồ');
     if (!contactInfo) return setError('Vui lòng nhập thông tin liên hệ');
     if (images.length === 0) return setError('Vui lòng tải lên ít nhất 1 ảnh');
     if (!user) return setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
@@ -161,7 +182,8 @@ export default function SellPage() {
       // 2. Insert DB record
       const { error: dbError } = await supabase.from('book_listings').insert({
         user_id: user.id,
-        subject_name: subject,
+        subject_name: subject.trim(),
+        category,
         image_urls: imageUrls,
         book_type: bookType,
         condition: condition,
@@ -188,8 +210,8 @@ export default function SellPage() {
       </Link>
 
       <div className="glass-panel p-8">
-        <h1 className="text-2xl font-bold mb-2">Đăng bán Giáo trình & Tài liệu</h1>
-        <p className="opacity-70 text-sm mb-8">Vui lòng điền thông tin chi tiết để sinh viên khác dễ dàng tìm thấy sách của bạn.</p>
+        <h1 className="text-2xl font-bold mb-2">Đăng bán trên Chợ sinh viên</h1>
+        <p className="opacity-70 text-sm mb-8">Đăng giáo trình, đồng phục hoặc đồ dùng cá nhân. Người mua sẽ liên hệ trực tiếp với bạn.</p>
         
         {error && (
           <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 text-sm mb-6">
@@ -198,22 +220,39 @@ export default function SellPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Môn học */}
+          <div>
+            <label className="block text-sm font-medium mb-2 opacity-80">Danh mục *</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {categoryOptions.map(option => {
+                const Icon = option.icon;
+                const selected = category === option.id;
+                return (
+                  <button key={option.id} type="button" onClick={() => changeCategory(option.id)} aria-pressed={selected}
+                    className={`min-h-12 px-3 py-3 rounded-xl border text-sm font-medium flex items-center justify-center gap-2 transition-colors ${selected ? 'bg-cyan-500/15 border-cyan-500 text-cyan-600 dark:text-cyan-300' : 'bg-background/50 border-border text-foreground/70 hover:bg-foreground/5'}`}>
+                    <Icon size={18} /> {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Tên giáo trình / món đồ */}
           <div className="relative" ref={suggestionsRef}>
-            <label className="block text-sm font-medium mb-1.5 opacity-80">Môn học *</label>
+            <label className="block text-sm font-medium mb-1.5 opacity-80">{category === 'textbook' ? 'Tên giáo trình hoặc môn học *' : 'Tên món đồ *'}</label>
             <input 
               type="text" 
               value={subjectSearch}
               onChange={(e) => {
                 setSubjectSearch(e.target.value);
                 setSubject(e.target.value);
-                setShowSuggestions(true);
+                setShowSuggestions(category === 'textbook');
               }}
-              onFocus={() => setShowSuggestions(true)}
+              onFocus={() => setShowSuggestions(category === 'textbook')}
               className="w-full bg-background/50 border border-border rounded-xl p-3 outline-none focus:border-cyan-500/50 transition-colors"
-              placeholder="VD: Triết học Mác - Lênin"
+              placeholder={category === 'textbook' ? 'VD: Triết học Mác - Lênin hoặc Giáo trình khác' : category === 'uniform' ? 'VD: Áo khoác đồng phục size M' : 'VD: Máy tính cầm tay Casio FX-580VN X'}
               required
             />
+            {category === 'textbook' && <p className="mt-1.5 text-xs text-foreground/55">Không có trong danh sách? Bạn có thể nhập tên giáo trình khác trực tiếp.</p>}
             {showSuggestions && filteredSuggestions.length > 0 && (
               <div className="absolute z-20 w-full mt-1 bg-background border border-border rounded-xl shadow-xl max-h-60 overflow-y-auto">
                 {filteredSuggestions.map((s, i) => (
@@ -261,16 +300,15 @@ export default function SellPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Loại sách */}
+            {/* Loại món đồ */}
             <div>
-              <label className="block text-sm font-medium mb-1.5 opacity-80">Phân loại sách *</label>
+              <label className="block text-sm font-medium mb-1.5 opacity-80">Phân loại *</label>
               <select 
                 value={bookType} 
                 onChange={e => setBookType(e.target.value)}
                 className="w-full bg-background/50 border border-border rounded-xl p-3 outline-none focus:border-cyan-500/50 transition-colors"
               >
-                <option value="Chính thống">Sách chính thống (bản gốc)</option>
-                <option value="Photo">Sách photo</option>
+                {itemTypeOptions[category].map(type => <option key={type} value={type}>{type}</option>)}
               </select>
             </div>
             
@@ -340,7 +378,7 @@ export default function SellPage() {
             className="w-full py-4 rounded-xl bg-cyan-500 text-white font-semibold shadow-lg shadow-cyan-500/20 hover:scale-[1.01] transition-transform disabled:opacity-70 disabled:hover:scale-100 flex justify-center items-center gap-2 mt-4"
           >
             {loading ? <Loader2 size={20} className="animate-spin" /> : <Upload size={20} />}
-            Đăng bài bán sách
+            Đăng bài bán
           </button>
         </form>
       </div>
