@@ -43,13 +43,13 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="glass-panel bg-background/90 backdrop-blur-2xl border border-glass-border shadow-2xl p-6 w-full max-w-md relative overflow-hidden">
         {/* Glow Effects inside modal */}
-        <div className="absolute -top-20 -left-20 w-40 h-40 bg-red-500/10 dark:bg-red-500/20 blur-[60px] rounded-full pointer-events-none"></div>
-        <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-cyan-500/10 dark:bg-cyan-500/20 blur-[60px] rounded-full pointer-events-none"></div>
+        <div className="absolute -top-20 -left-20 w-40 h-40 bg-cyan-500/10 dark:bg-cyan-500/20 blur-[60px] rounded-full pointer-events-none"></div>
+        <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-blue-500/10 dark:bg-blue-500/20 blur-[60px] rounded-full pointer-events-none"></div>
 
         <div className="relative z-10 flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center border border-foreground/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]">
-              <CalendarPlus className="text-red-400" size={20} />
+              <CalendarPlus className="text-cyan-600 dark:text-cyan-300" size={20} />
             </div>
             <h2 className="text-xl font-bold text-foreground tracking-wide">Tạo Lịch Thi Mới</h2>
           </div>
@@ -70,7 +70,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
               value={formData.subjectName}
               onChange={handleChange}
               placeholder="VD: Kinh tế vi mô 1"
-              className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-red-400 focus:ring-1 focus:ring-red-400 focus:outline-none transition-all placeholder:text-foreground/30"
+              className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/15 focus:outline-none transition-all placeholder:text-foreground/30"
             />
           </div>
 
@@ -83,7 +83,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
                 name="examDate"
                 value={formData.examDate}
                 onChange={handleChange}
-                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-red-400 focus:ring-1 focus:ring-red-400 focus:outline-none transition-all dark:[color-scheme:dark]"
+                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/15 focus:outline-none transition-all dark:[color-scheme:dark]"
               />
             </div>
             <div>
@@ -94,7 +94,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
                 name="startTime"
                 value={formData.startTime}
                 onChange={handleChange}
-                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-red-400 focus:ring-1 focus:ring-red-400 focus:outline-none transition-all dark:[color-scheme:dark]"
+                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/15 focus:outline-none transition-all dark:[color-scheme:dark]"
               />
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
               value={formData.room}
               onChange={handleChange}
               placeholder="VD: A2-701"
-              className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-red-400 focus:ring-1 focus:ring-red-400 focus:outline-none transition-all placeholder:text-foreground/30"
+              className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/15 focus:outline-none transition-all placeholder:text-foreground/30"
             />
           </div>
 
@@ -118,7 +118,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
                 name="format"
                 value={formData.format}
                 onChange={handleChange}
-                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-red-400 focus:ring-1 focus:ring-red-400 focus:outline-none transition-all appearance-none"
+                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/15 focus:outline-none transition-all appearance-none"
               >
                 <option value="Trắc nghiệm máy tính">Trắc nghiệm máy tính</option>
                 <option value="Tự luận">Tự luận</option>
@@ -132,7 +132,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
                 name="reminder"
                 value={formData.reminder}
                 onChange={handleChange}
-                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-red-400 focus:ring-1 focus:ring-red-400 focus:outline-none transition-all appearance-none"
+                className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/15 focus:outline-none transition-all appearance-none"
               >
                 <option value="Trước 1 ngày">Trước 1 ngày</option>
                 <option value="Trước 2 giờ">Trước 2 giờ</option>
@@ -150,7 +150,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
               onChange={handleChange}
               rows={2}
               placeholder="VD: Mang thẻ sinh viên, bút chì 2B..."
-              className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-red-400 focus:ring-1 focus:ring-red-400 focus:outline-none transition-all placeholder:text-foreground/30 resize-none"
+              className="w-full bg-foreground/5 border border-foreground/20 text-foreground rounded-xl p-3 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/15 focus:outline-none transition-all placeholder:text-foreground/30 resize-none"
             />
           </div>
 
@@ -166,7 +166,7 @@ export default function ExamModal({ isOpen, onClose, onSave }: ExamModalProps) {
             <button 
               type="submit"
               disabled={loading}
-              className="flex-1 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-red-500/30 transition-all flex items-center justify-center gap-2"
+              className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-500 hover:brightness-110 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-cyan-500/25 transition-[filter,transform] active:scale-[0.98] flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 size={20} className="animate-spin" /> : 'Lưu lịch thi'}
             </button>

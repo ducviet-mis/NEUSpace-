@@ -70,7 +70,7 @@ export default function ExamsPage() {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     const day = date.getDay();
-    return day === 0 ? 'CN' : `T${day + 1}`;
+    return day === 0 ? 'Chủ nhật' : `Thứ ${day + 1}`;
   };
 
   if (loading) {
@@ -83,17 +83,19 @@ export default function ExamsPage() {
 
   return (
     <div className="flex flex-col gap-6 h-full animate-in fade-in duration-700 max-w-4xl mx-auto w-full pb-12">
-      <div className="glass-panel p-6 sm:p-8 flex items-center justify-between">
+      <div className="glass-panel p-5 sm:p-8 flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-3">
-            <FileText className="text-orange-400" size={28} />
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-500/12 text-cyan-600 dark:text-cyan-300">
+              <FileText size={22} aria-hidden="true" />
+            </span>
             Lịch Thi
           </h1>
           <p className="text-foreground/70 text-sm">Quản lý và theo dõi các lịch thi sắp tới của bạn.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-foreground font-bold py-3 px-6 rounded-2xl shadow-[0_4px_15px_rgba(249,115,22,0.4)] transition-all flex items-center gap-2"
+          className="min-h-11 shrink-0 bg-gradient-to-r from-cyan-500 to-blue-500 hover:brightness-110 active:scale-[0.98] text-white font-bold py-3 px-4 sm:px-6 rounded-2xl shadow-[0_6px_18px_rgba(6,182,212,0.24)] transition-[filter,transform] duration-200 flex items-center gap-2"
         >
           <Plus size={20} />
           <span className="hidden sm:inline">Thêm lịch thi</span>
@@ -108,37 +110,37 @@ export default function ExamsPage() {
           </div>
         ) : (
           exams.map((ex) => (
-            <div key={ex.id} className="glass-panel p-6 flex flex-col sm:flex-row gap-6 relative group overflow-hidden border-l-4 border-l-orange-500">
+            <div key={ex.id} className="glass-panel p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 relative group overflow-hidden border-l-4 border-l-cyan-500">
               {/* Date Block */}
-              <div className="flex flex-col items-center justify-center min-w-[100px] bg-foreground/5 rounded-xl p-4 border border-foreground/10">
-                <CalendarDays size={24} className="text-orange-400 mb-2" />
-                <div className="text-lg font-bold text-foreground">{formatDate(ex.exam_date)}</div>
-                <div className="text-xs text-foreground/50 uppercase tracking-wider font-semibold mt-1">
-                  Thứ {getDayOfWeek(ex.exam_date)}
+              <div className="flex flex-row sm:flex-col items-center justify-start sm:justify-center gap-3 sm:gap-0 min-w-[100px] bg-cyan-500/8 rounded-2xl px-4 py-3 sm:p-4 border border-cyan-500/18">
+                <CalendarDays size={23} className="text-cyan-600 dark:text-cyan-300 sm:mb-2" />
+                <div className="text-lg font-bold text-foreground tabular-nums">{formatDate(ex.exam_date)}</div>
+                <div className="text-xs text-foreground/60 tracking-wide font-semibold sm:mt-1">
+                  {getDayOfWeek(ex.exam_date)}
                 </div>
               </div>
 
               {/* Info Block */}
               <div className="flex-1 flex flex-col justify-center">
-                <h3 className="text-xl font-bold text-foreground mb-3">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground mb-3 pr-10 sm:pr-0">
                   {ex.subject_name}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4">
                   <div className="flex items-center gap-2 text-sm text-foreground/80">
-                    <Clock size={16} className="text-cyan-400" />
+                    <Clock size={16} className="text-cyan-600 dark:text-cyan-300" />
                     Giờ thi: <span className="font-semibold text-foreground">{ex.start_time?.substring(0,5)}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-foreground/80">
-                    <MapPin size={16} className="text-red-400" />
+                    <MapPin size={16} className="text-blue-500 dark:text-blue-400" />
                     Phòng: <span className="font-semibold text-foreground">{ex.room}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-foreground/80">
-                    <FileText size={16} className="text-purple-400" />
+                    <FileText size={16} className="text-cyan-600 dark:text-cyan-300" />
                     Hình thức: <span className="font-semibold text-foreground">{ex.format}</span>
                   </div>
                 </div>
                 {ex.notes && (
-                  <div className="mt-4 text-sm text-foreground/60 bg-foreground/5 p-3 rounded-xl border border-foreground/5">
+                  <div className="mt-4 text-sm text-foreground/70 bg-foreground/5 p-3 rounded-xl border border-foreground/10">
                     <span className="font-semibold text-foreground/80">Ghi chú:</span> {ex.notes}
                   </div>
                 )}
@@ -147,7 +149,7 @@ export default function ExamsPage() {
               {/* Actions */}
               <button 
                 onClick={() => handleDelete(ex.id)}
-                className="absolute top-4 right-4 text-foreground/30 hover:text-red-500 hover:bg-foreground/10 p-2 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 min-h-11 min-w-11 flex items-center justify-center text-foreground/45 hover:text-red-500 hover:bg-red-500/10 active:scale-95 rounded-xl transition-[color,background-color,transform,opacity] opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                 title="Xóa lịch thi"
               >
                 <Trash2 size={20} />

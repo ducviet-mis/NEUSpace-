@@ -367,12 +367,12 @@ export default function Home() {
 
             {/* Danh sách các bài thi hiển thị theo dạng ô riêng (Cards) */}
             {todaysExams.map(ex => (
-              <div key={ex.id} className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden">
-                <div className="absolute top-0 right-0 px-2 py-1 bg-orange-500/20 text-orange-400 text-[10px] font-bold rounded-bl-lg">THI</div>
-                <h4 className="font-bold text-orange-400 text-base">{ex.subject_name}</h4>
+              <div key={ex.id} className="bg-gradient-to-r from-cyan-500/10 to-blue-500/8 border border-cyan-500/22 rounded-2xl p-4 flex flex-col gap-2 relative overflow-hidden">
+                <div className="absolute top-0 right-0 px-2 py-1 bg-cyan-500/18 text-cyan-700 dark:text-cyan-300 text-[10px] font-bold rounded-bl-lg">THI</div>
+                <h4 className="font-bold text-cyan-700 dark:text-cyan-300 text-base">{ex.subject_name}</h4>
                 <div className="flex items-center justify-between text-xs text-foreground/70">
-                   <div className="flex items-center gap-1"><Clock size={14} className="text-cyan-400"/> {ex.start_time?.substring(0,5)}</div>
-                   <div className="flex items-center gap-1 text-red-300 font-medium">Phòng: {ex.room}</div>
+                   <div className="flex items-center gap-1"><Clock size={14} className="text-cyan-600 dark:text-cyan-300"/> {ex.start_time?.substring(0,5)}</div>
+                   <div className="flex items-center gap-1 text-blue-600 dark:text-blue-300 font-medium">Phòng: {ex.room}</div>
                 </div>
               </div>
             ))}
