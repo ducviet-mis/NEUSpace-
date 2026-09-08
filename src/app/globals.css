@@ -5,11 +5,21 @@
 
   --color-brand-navy: #0b1730;
   --color-brand-midnight: #13284a;
-  --color-brand-royal: #2563eb;
-  --color-brand-cyan: #06b6d4;
-  --color-brand-azure: #3b82f6;
-  --color-brand-violet: #8b5cf6;
-  --color-brand-coral: #f43f5e;
+  --color-brand-royal: var(--blue-action);
+  --color-brand-cyan: var(--cyan-action);
+  --color-brand-azure: var(--blue-action);
+  --color-brand-violet: var(--violet-action);
+  --color-brand-coral: var(--rose-action);
+
+  /* Theme-aware accent utilities. The light palette is deliberately deeper so
+     white action labels and cyan text stay readable on pale surfaces. */
+  --color-cyan-400: var(--cyan-emphasis);
+  --color-cyan-500: var(--cyan-action);
+  --color-cyan-600: var(--cyan-deep);
+  --color-blue-500: var(--blue-action);
+  --color-blue-600: var(--blue-deep);
+  --color-violet-500: var(--violet-action);
+  --color-rose-500: var(--rose-action);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -20,13 +30,21 @@
 
 @layer base {
   :root {
-    --background: #f4f7fb;
-    --foreground: #10213b;
-    --border: rgba(38, 74, 112, 0.16);
-    --glass-panel: rgba(255, 255, 255, 0.82);
-    --glass-border: rgba(52, 88, 125, 0.16);
-    --panel-shadow: 0 14px 38px rgba(35, 63, 98, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.74);
-    --card-shadow: 0 8px 22px rgba(35, 63, 98, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+    --background: #e9f0f7;
+    --foreground: #0b1d33;
+    --border: rgba(42, 65, 94, 0.22);
+    --glass-panel: rgba(244, 248, 252, 0.92);
+    --glass-border: rgba(48, 73, 103, 0.20);
+    --input-surface: rgba(235, 242, 248, 0.94);
+    --cyan-emphasis: #0a667e;
+    --cyan-action: #0e7490;
+    --cyan-deep: #07596e;
+    --blue-action: #2563eb;
+    --blue-deep: #1d4ed8;
+    --violet-action: #6d28d9;
+    --rose-action: #be123c;
+    --panel-shadow: 0 14px 34px rgba(35, 58, 84, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.48);
+    --card-shadow: 0 7px 20px rgba(35, 58, 84, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.34);
   }
 
   .dark {
@@ -35,6 +53,14 @@
     --border: rgba(148, 191, 229, 0.16);
     --glass-panel: rgba(15, 35, 59, 0.78);
     --glass-border: rgba(158, 207, 242, 0.15);
+    --input-surface: rgba(10, 27, 47, 0.88);
+    --cyan-emphasis: #67e8f9;
+    --cyan-action: #0e7490;
+    --cyan-deep: #0e7490;
+    --blue-action: #2563eb;
+    --blue-deep: #1d4ed8;
+    --violet-action: #7c3aed;
+    --rose-action: #e11d48;
     --panel-shadow: 0 18px 42px rgba(0, 5, 15, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.055);
     --card-shadow: 0 8px 24px rgba(0, 5, 15, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
@@ -54,8 +80,8 @@
     min-height: 100dvh;
     -webkit-tap-highlight-color: transparent;
     background-image:
-      radial-gradient(circle at 8% -10%, rgba(34, 211, 238, 0.13), transparent 30rem),
-      radial-gradient(circle at 96% 105%, rgba(59, 130, 246, 0.10), transparent 34rem);
+      radial-gradient(circle at 8% -10%, rgba(14, 116, 144, 0.08), transparent 30rem),
+      radial-gradient(circle at 96% 105%, rgba(37, 99, 235, 0.06), transparent 34rem);
     transition: background-color 220ms ease, color 220ms ease;
   }
 
@@ -68,7 +94,8 @@
   input,
   select,
   textarea {
-    @apply bg-glass-panel border border-glass-border text-foreground rounded-xl px-3 focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-400/15;
+    @apply border border-glass-border text-foreground rounded-xl px-3 focus:border-cyan-400 focus:outline-none focus:ring-4 focus:ring-cyan-400/15;
+    background-color: var(--input-surface);
     transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
   }
 
@@ -109,7 +136,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(100, 150, 190, 0.36);
+    background: rgba(79, 111, 145, 0.42);
     border: 3px solid transparent;
     background-clip: padding-box;
     border-radius: 999px;
@@ -127,6 +154,11 @@
     border: 1px solid var(--glass-border);
     box-shadow: var(--panel-shadow);
     transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  }
+
+  html:not(.dark) .glass-panel,
+  html:not(.dark) .glass-card {
+    backdrop-filter: blur(18px) saturate(110%);
   }
 
   .glass-card {

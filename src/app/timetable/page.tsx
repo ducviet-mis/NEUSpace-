@@ -610,7 +610,7 @@ export default function TimetablePage() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="px-6 py-2 bg-brand-cyan text-foreground rounded-lg font-medium shadow-lg hover:bg-brand-cyan/90 transition-colors disabled:opacity-70 flex items-center gap-2"
+                  className="px-6 py-2 bg-brand-cyan text-white rounded-lg font-medium shadow-lg hover:bg-brand-cyan/90 transition-colors disabled:opacity-70 flex items-center gap-2"
                 >
                   {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : 'Lưu lịch'}
                 </button>

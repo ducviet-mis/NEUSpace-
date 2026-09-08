@@ -617,7 +617,7 @@ export default function ExportTimetableModal({ isOpen, onClose, events, profile 
                   <span className="text-sm font-bold">Dark Glass</span>
                 </button>
                 <button onClick={() => setTheme('light')}
-                  className={`p-3 rounded-2xl border flex items-center justify-center gap-2 transition-all ${theme === 'light' ? 'bg-white text-slate-900 border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]' : 'bg-foreground/5 border-foreground/10 text-foreground/60 hover:bg-foreground/10'}`}>
+                  className={`p-3 rounded-2xl border flex items-center justify-center gap-2 transition-all ${theme === 'light' ? 'bg-slate-100 text-slate-900 border-slate-200 shadow-[0_0_15px_rgba(37,99,235,0.12)]' : 'bg-foreground/5 border-foreground/10 text-foreground/60 hover:bg-foreground/10'}`}>
                   <Sun size={18} />
                   <span className="text-sm font-bold">Light Glass</span>
                 </button>

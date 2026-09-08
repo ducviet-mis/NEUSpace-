@@ -147,8 +147,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-dvh md:h-dvh w-screen overflow-x-hidden md:overflow-hidden flex bg-background">
       
       {/* Decorative Background Meshes for Liquid Glassmorphism */}
-      <div className="fixed -top-36 left-[12%] h-[28rem] w-[28rem] rounded-full bg-cyan-400/10 dark:bg-cyan-500/12 blur-[110px] pointer-events-none z-0"></div>
-      <div className="fixed -bottom-44 right-[4%] h-[34rem] w-[34rem] rounded-full bg-blue-500/10 dark:bg-indigo-500/14 blur-[130px] pointer-events-none z-0"></div>
+      <div className="fixed -top-36 left-[12%] h-[28rem] w-[28rem] rounded-full bg-cyan-500/[0.06] dark:bg-cyan-500/12 blur-[110px] pointer-events-none z-0"></div>
+      <div className="fixed -bottom-44 right-[4%] h-[34rem] w-[34rem] rounded-full bg-blue-500/[0.055] dark:bg-indigo-500/14 blur-[130px] pointer-events-none z-0"></div>
 
       {/* Main Desktop App Window */}
       <div className="w-full min-h-dvh md:h-full flex overflow-visible md:overflow-hidden relative z-10">

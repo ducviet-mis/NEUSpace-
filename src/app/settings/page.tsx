@@ -251,7 +251,7 @@ export default function SettingsPage() {
             <div className="space-y-3">
               <button 
                 onClick={() => setIsPasswordModalOpen(true)}
-                className="w-full py-2.5 bg-orange-500/10 text-orange-500 rounded-lg text-sm font-semibold hover:bg-orange-500 hover:text-foreground transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-lg text-sm font-semibold hover:bg-orange-500 hover:text-white transition-colors flex items-center justify-center gap-2"
               >
                 <Lock size={16} />
                 Đổi mật khẩu
@@ -260,7 +260,7 @@ export default function SettingsPage() {
               <button 
                 onClick={signOutOtherDevices}
                 disabled={saving}
-                className="w-full py-2.5 bg-red-500/10 text-red-500 rounded-lg text-sm font-semibold hover:bg-red-500 hover:text-foreground transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-red-500/10 text-red-700 dark:text-red-400 rounded-lg text-sm font-semibold hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-2"
               >
                 <LogOut size={16} />
                 Đăng xuất thiết bị khác
@@ -321,7 +321,7 @@ export default function SettingsPage() {
             <div className="flex justify-end">
               <button 
                 type="submit" disabled={saving}
-                className="px-6 py-2.5 bg-brand-cyan text-foreground rounded-lg text-sm font-medium shadow-lg shadow-brand-cyan/20 hover:scale-[1.02] transition-transform disabled:opacity-70"
+                className="px-6 py-2.5 bg-brand-cyan text-white rounded-lg text-sm font-medium shadow-lg shadow-brand-cyan/20 hover:scale-[1.02] transition-transform disabled:opacity-70"
               >
                 {saving ? 'Đang lưu...' : 'Lưu Thông Tin'}
               </button>
@@ -409,7 +409,7 @@ export default function SettingsPage() {
                 <button 
                   type="submit" 
                   disabled={passwordLoading}
-                  className="px-6 py-2.5 bg-orange-500 text-foreground rounded-lg text-sm font-medium shadow-lg hover:bg-orange-500/90 transition-colors disabled:opacity-70 flex items-center gap-2"
+                  className="px-6 py-2.5 bg-orange-500 text-white rounded-lg text-sm font-medium shadow-lg hover:bg-orange-500/90 transition-colors disabled:opacity-70 flex items-center gap-2"
                 >
                   {passwordLoading && <Loader2 size={16} className="animate-spin" />}
                   Xác nhận đổi
