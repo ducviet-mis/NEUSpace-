@@ -198,14 +198,28 @@ export default function ProgressPage() {
     return grouped;
   }, [currentMajor, processedMajors]);
 
+  const renderSaveStatus = (subjectCode: string) => {
+    const grade = grades[subjectCode];
+    if (savingState[subjectCode]) {
+      return <span className="inline-flex items-center gap-1.5 text-xs text-brand-cyan whitespace-nowrap"><Loader2 size={16} className="animate-spin" /> Đang lưu</span>;
+    }
+    if (savedState[subjectCode] || grade?.id) {
+      return <span className="inline-flex items-center gap-1.5 text-xs text-green-500 whitespace-nowrap"><CheckCircle size={16} /> Đã lưu</span>;
+    }
+    if (saveErrorState[subjectCode]) {
+      return <span className="text-xs text-red-500 whitespace-nowrap">Chưa lưu được</span>;
+    }
+    return <span className="text-xs opacity-50 whitespace-nowrap">Chưa nhập</span>;
+  };
+
   if (loading) {
     return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="animate-spin text-brand-cyan w-8 h-8" /></div>;
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-      <div className="glass-panel p-6 border-b border-border">
-        <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
+    <div className="space-y-5 md:space-y-6 animate-in fade-in duration-500 pb-12">
+      <div className="glass-panel p-5 md:p-6 border-b border-border">
+        <h1 className="text-xl md:text-2xl font-bold mb-2 flex items-center gap-2">
           <BookOpen className="text-brand-violet" />
           Tiến độ Chương trình đào tạo
         </h1>
@@ -213,10 +227,10 @@ export default function ProgressPage() {
           Nhập điểm theo từng môn học. Sau khi bạn dừng nhập, điểm sẽ tự động lưu và đồng bộ với tổng tín chỉ, GPA trên Trang chủ.
         </p>
 
-        <div className="mt-6 p-4 rounded-xl bg-background/50 border border-border">
+        <div className="mt-5 md:mt-6 p-4 rounded-2xl bg-background/50 border border-border">
           <label className="block text-sm font-medium mb-2 opacity-80">Ngành học của bạn</label>
           <select 
-            className="w-full bg-background border border-border rounded-lg p-3 outline-none focus:border-brand-violet/50"
+            className="w-full bg-background border border-border rounded-xl p-3 outline-none focus:border-brand-violet/50"
             value={currentMajor}
             onChange={e => saveMajor(e.target.value)}
           >
@@ -238,18 +252,18 @@ export default function ProgressPage() {
       )}
 
       {selectedMajorData && (
-        <div className="space-y-8">
+        <div className="space-y-5 md:space-y-8">
           {Object.keys(selectedMajorData).sort((a, b) => Number(a) - Number(b)).map(sem => {
             const semesterNum = Number(sem);
             const subjects = selectedMajorData[semesterNum];
             
             return (
-              <div key={sem} className="glass-panel p-6">
-                <h3 className="text-lg font-bold mb-4 text-brand-cyan">
+              <div key={sem} className="glass-panel p-4 sm:p-5 md:p-6">
+                <h3 className="text-base md:text-lg font-bold mb-4 text-brand-cyan">
                   {semesterNum === 0 ? 'Môn Tự chọn / Không phân kỳ' : `Kỳ ${semesterNum}`}
                 </h3>
                 
-                <div className="overflow-x-auto">
+                <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b border-border/50 text-sm opacity-70">
@@ -265,10 +279,6 @@ export default function ProgressPage() {
                     <tbody>
                       {subjects.map(s => {
                         const grade = grades[s.subjectCode];
-                        const isSaving = savingState[s.subjectCode];
-                        const isSaved = savedState[s.subjectCode];
-                        const isPersisted = Boolean(grade?.id);
-                        const hasSaveError = saveErrorState[s.subjectCode];
                         const isCompleted = grade?.score_10 !== null && grade?.score_10 !== undefined;
                         
                         return (
@@ -318,26 +328,62 @@ export default function ProgressPage() {
                               )}
                             </td>
                             
-                            <td className="py-4 text-center">
-                              {isSaving ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs text-brand-cyan whitespace-nowrap">
-                                  <Loader2 size={16} className="animate-spin" /> Đang lưu
-                                </span>
-                              ) : isSaved || isPersisted ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs text-green-500 whitespace-nowrap">
-                                  <CheckCircle size={16} /> Đã lưu
-                                </span>
-                              ) : hasSaveError ? (
-                                <span className="text-xs text-red-500 whitespace-nowrap">Chưa lưu được</span>
-                              ) : (
-                                <span className="text-xs opacity-50 whitespace-nowrap">Chưa nhập</span>
-                              )}
-                            </td>
+                            <td className="py-4 text-center">{renderSaveStatus(s.subjectCode)}</td>
                           </tr>
                         );
                       })}
                     </tbody>
                   </table>
+                </div>
+
+                <div className="space-y-3 md:hidden">
+                  {subjects.map(s => {
+                    const grade = grades[s.subjectCode];
+                    const isCompleted = grade?.score_10 !== null && grade?.score_10 !== undefined;
+
+                    return (
+                      <article key={s.subjectCode} className={`rounded-2xl border p-4 transition-colors ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-border bg-background/35'}`}>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <h4 className={`font-semibold leading-snug ${isCompleted ? 'text-green-500' : 'text-foreground'}`}>{s.name}</h4>
+                            <p className="mt-1 text-xs text-foreground/60">{s.subjectCode} · {s.credits} tín chỉ · {s.required ? 'Bắt buộc' : 'Tự chọn'}</p>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <p className={`text-2xl font-bold ${isCompleted ? 'text-brand-violet' : 'text-foreground/35'}`}>{isCompleted ? grade.score_10 : '—'}</p>
+                            <p className="text-[10px] text-foreground/50">Hệ 10</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 grid grid-cols-3 gap-2">
+                          {([
+                            ['CC', 'score_cc', '10%'],
+                            ['GK', 'score_gk', '40%'],
+                            ['CK', 'score_ck', '50%'],
+                          ] as const).map(([label, field, weight]) => (
+                            <label key={field} className="min-w-0 rounded-xl bg-foreground/5 px-2 py-2 text-center">
+                              <span className="block text-[11px] font-semibold text-foreground/65">{label} <span className="font-normal text-foreground/45">{weight}</span></span>
+                              <input
+                                type="number"
+                                inputMode="decimal"
+                                step="0.1"
+                                min="0"
+                                max="10"
+                                aria-label={`${label} môn ${s.name}`}
+                                className="mt-1 w-full min-w-0 border-0 bg-transparent p-0 text-center text-base font-semibold focus:ring-0"
+                                value={grade?.[field] ?? ''}
+                                onChange={(e) => handleScoreChange(s.subjectCode, s.credits, field, e.target.value)}
+                              />
+                            </label>
+                          ))}
+                        </div>
+
+                        <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
+                          <span className="text-xs text-foreground/55">Tự động lưu sau khi dừng nhập</span>
+                          {renderSaveStatus(s.subjectCode)}
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
               </div>
             );

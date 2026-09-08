@@ -278,11 +278,11 @@ export default function DoubleMajorPage() {
           </div>
         )}
 
-      <div className="space-y-6 pb-12 animate-in fade-in duration-500">
+      <div className="space-y-5 md:space-y-6 pb-12 animate-in fade-in duration-500">
       {/* ===== HEADER: Chọn ngành ===== */}
-      <div className="glass-panel p-6">
+      <div className="glass-panel p-5 md:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
             <BookOpen className="text-brand-cyan" />
             Kế hoạch Học Song Ngành
           </h1>
@@ -307,13 +307,13 @@ export default function DoubleMajorPage() {
 
         
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="rounded-2xl border border-brand-cyan/15 bg-brand-cyan/5 p-4">
             <label className="block text-sm font-medium mb-2 opacity-80">
               Ngành 1 <span className="text-brand-cyan">(Ngành đang học)</span>
             </label>
             <select
-              className="w-full bg-background/50 border border-border rounded-xl p-3 outline-none focus:border-brand-cyan/50"
+              className="w-full bg-background/70 border border-border rounded-xl p-3 outline-none focus:border-brand-cyan/50"
               value={major1}
               onChange={e => handleMajor1Change(e.target.value)}
             >
@@ -326,12 +326,12 @@ export default function DoubleMajorPage() {
             </select>
           </div>
 
-          <div>
+          <div className="rounded-2xl border border-brand-violet/15 bg-brand-violet/5 p-4">
             <label className="block text-sm font-medium mb-2 opacity-80">
               Ngành 2 <span className="text-brand-violet">(Ngành muốn học thêm)</span>
             </label>
             <select
-              className="w-full bg-background/50 border border-border rounded-xl p-3 outline-none focus:border-brand-violet/50"
+              className="w-full bg-background/70 border border-border rounded-xl p-3 outline-none focus:border-brand-violet/50"
               value={major2}
               onChange={e => handleMajor2Change(e.target.value)}
             >
@@ -356,41 +356,41 @@ export default function DoubleMajorPage() {
 
       {/* ===== ANALYSIS RESULTS ===== */}
       {analysis && stats && (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-5 md:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
           {/* ===== KHU VỰC TỔNG QUAN: 3 ô + dòng tổng ===== */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-flow-col auto-cols-[minmax(15.5rem,82vw)] gap-3 overflow-x-auto overscroll-x-contain snap-x snap-mandatory pb-1 no-scrollbar md:grid-flow-row md:auto-cols-auto md:grid-cols-3 md:gap-4 md:overflow-visible md:pb-0">
             {/* Ô 1: Môn bắt buộc trùng */}
-            <div className="glass-card p-6 border-green-500/20 bg-green-500/5 relative overflow-hidden">
-              <CheckCircle className="absolute right-[-16px] bottom-[-16px] w-28 h-28 text-green-500/10" />
+            <div className="glass-card snap-start p-4 md:p-6 border-green-500/20 bg-green-500/5 relative overflow-hidden">
+              <CheckCircle className="absolute right-[-16px] bottom-[-16px] w-24 h-24 md:w-28 md:h-28 text-green-500/10" />
               <p className="text-sm opacity-80 mb-1 font-medium">Bắt buộc trùng nhau</p>
               <p className="text-xs opacity-60 mb-3">Được miễn học</p>
               <div className="flex items-end gap-2">
-                <p className="text-5xl font-bold text-green-500">{stats?.sharedReqCount || 0}</p>
+              <p className="text-4xl md:text-5xl font-bold text-green-500">{stats?.sharedReqCount || 0}</p>
                 <p className="text-lg opacity-70 mb-1">môn</p>
               </div>
               <p className="text-sm opacity-60 mt-2">{stats.sharedReqCredits} tín chỉ</p>
             </div>
 
             {/* Ô 2: Bắt buộc cần học thêm */}
-            <div className="glass-card p-6 border-brand-cyan/20 bg-brand-cyan/5 relative overflow-hidden">
-              <ArrowRight className="absolute right-[-16px] bottom-[-16px] w-28 h-28 text-brand-cyan/10" />
+            <div className="glass-card snap-start p-4 md:p-6 border-brand-cyan/20 bg-brand-cyan/5 relative overflow-hidden">
+              <ArrowRight className="absolute right-[-16px] bottom-[-16px] w-24 h-24 md:w-28 md:h-28 text-brand-cyan/10" />
               <p className="text-sm opacity-80 mb-1 font-medium">Bắt buộc cần học thêm</p>
               <p className="text-xs opacity-60 mb-3">Môn bắt buộc của Ngành 2</p>
               <div className="flex items-end gap-2">
-                <p className="text-5xl font-bold text-brand-cyan">{stats?.extraReqCount || 0}</p>
+              <p className="text-4xl md:text-5xl font-bold text-brand-cyan">{stats?.extraReqCount || 0}</p>
                 <p className="text-lg opacity-70 mb-1">môn</p>
               </div>
               <p className="text-sm opacity-60 mt-2">{stats.extraReqCredits} tín chỉ</p>
             </div>
 
             {/* Ô 3: Tự chọn cần học thêm (real-time) */}
-            <div className="glass-card p-6 border-brand-violet/20 bg-brand-violet/5 relative overflow-hidden">
-              <Plus className="absolute right-[-16px] bottom-[-16px] w-28 h-28 text-brand-violet/10" />
+            <div className="glass-card snap-start p-4 md:p-6 border-brand-violet/20 bg-brand-violet/5 relative overflow-hidden">
+              <Plus className="absolute right-[-16px] bottom-[-16px] w-24 h-24 md:w-28 md:h-28 text-brand-violet/10" />
               <p className="text-sm opacity-80 mb-1 font-medium">Tự chọn cần học thêm</p>
               <p className="text-xs opacity-60 mb-3">Tick chọn ở Tab 3 để cập nhật</p>
               <div className="flex items-end gap-2">
-                <p className="text-5xl font-bold text-brand-violet transition-all duration-300">
+              <p className="text-4xl md:text-5xl font-bold text-brand-violet transition-all duration-300">
                   {stats?.extraElectiveCount || 0}
                 </p>
                 <p className="text-lg opacity-70 mb-1">môn</p>
@@ -402,7 +402,7 @@ export default function DoubleMajorPage() {
           </div>
 
           {/* Dòng tổng kết nổi bật */}
-          <div className="glass-panel p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-foreground/30">
+          <div className="glass-panel p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-foreground/30">
             <div className="flex items-center gap-3">
               <Sparkles className="text-amber-400" size={28} />
               <div>
@@ -411,7 +411,7 @@ export default function DoubleMajorPage() {
               </div>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-5xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-violet transition-all duration-300">
+              <span className="text-4xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-violet transition-all duration-300">
                 {stats.totalExtra}
               </span>
               <span className="text-xl text-foreground/60 font-medium">môn</span>
@@ -423,19 +423,19 @@ export default function DoubleMajorPage() {
 
 
       {/* ===== KHU VỰC CHI TIẾT: 4 Tabs ===== */}
-      <div className="glass-panel overflow-hidden mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="glass-panel overflow-hidden mt-5 md:mt-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Tab Headers */}
         <div className="flex border-b border-border/50 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('shared')}
             className={clsx(
-              'flex items-center gap-2 px-6 py-4 font-medium transition-colors border-b-2 whitespace-nowrap text-sm',
+              'min-h-12 flex items-center gap-2 px-4 sm:px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm',
               activeTab === 'shared'
                 ? 'border-green-500 text-green-500 bg-green-500/5'
                 : 'border-transparent opacity-70 hover:opacity-100 hover:bg-foreground/5'
             )}
           >
-            Tab 1: Bắt buộc trùng nhau
+            <span className="sm:hidden">Trùng</span><span className="hidden sm:inline">Tab 1: Bắt buộc trùng nhau</span>
             <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-500 text-xs font-bold">
               {stats?.sharedReqCount || 0}
             </span>
@@ -443,13 +443,13 @@ export default function DoubleMajorPage() {
           <button
             onClick={() => setActiveTab('required_extra')}
             className={clsx(
-              'flex items-center gap-2 px-6 py-4 font-medium transition-colors border-b-2 whitespace-nowrap text-sm',
+              'min-h-12 flex items-center gap-2 px-4 sm:px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm',
               activeTab === 'required_extra'
                 ? 'border-brand-cyan text-brand-cyan bg-brand-cyan/5'
                 : 'border-transparent opacity-70 hover:opacity-100 hover:bg-foreground/5'
             )}
           >
-            Tab 2: Bắt buộc học thêm
+            <span className="sm:hidden">Học thêm</span><span className="hidden sm:inline">Tab 2: Bắt buộc học thêm</span>
             <span className="px-2 py-0.5 rounded-full bg-brand-cyan/20 text-brand-cyan text-xs font-bold">
               {stats?.extraReqCount || 0}
             </span>
@@ -457,13 +457,13 @@ export default function DoubleMajorPage() {
           <button
             onClick={() => setActiveTab('electives')}
             className={clsx(
-              'flex items-center gap-2 px-6 py-4 font-medium transition-colors border-b-2 whitespace-nowrap text-sm',
+              'min-h-12 flex items-center gap-2 px-4 sm:px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm',
               activeTab === 'electives'
                 ? 'border-brand-violet text-brand-violet bg-brand-violet/5'
                 : 'border-transparent opacity-70 hover:opacity-100 hover:bg-foreground/5'
             )}
           >
-            Tab 3: Chọn môn tự chọn
+            <span className="sm:hidden">Tự chọn</span><span className="hidden sm:inline">Tab 3: Chọn môn tự chọn</span>
             <span className="px-2 py-0.5 rounded-full bg-brand-violet/20 text-brand-violet text-xs font-bold">
               {stats?.extraElectiveCount || 0} thêm
             </span>
@@ -472,7 +472,7 @@ export default function DoubleMajorPage() {
         </div>
 
         {/* Tab Contents */}
-        <div className="p-6">
+        <div className="p-4 sm:p-5 md:p-6">
 
           {/* ===== TAB 1: BẮT BUỘC TRÙNG NHAU ===== */}
           {activeTab === 'shared' && (
@@ -494,9 +494,9 @@ export default function DoubleMajorPage() {
                   {analysis.sharedRequired.length === 0 ? (
                     <p className="opacity-50 text-sm py-8 text-center">Không có môn bắt buộc nào trùng nhau giữa 2 ngành.</p>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:max-h-[500px] md:overflow-y-auto md:pr-2">
                       {analysis.sharedRequired.map((s, i) => (
-                        <div key={`shared-${i}`} className="p-3 bg-background/50 rounded-lg border border-green-500/20 text-sm flex justify-between items-center">
+                        <div key={`shared-${i}`} className="p-3 bg-background/50 rounded-xl border border-green-500/20 text-sm flex justify-between items-start gap-3">
                           <div>
                             <p className="font-medium text-green-500">{s.name}</p>
                             <p className="opacity-60 text-xs">{s.subjectCode} • {s.knowledgeBlock}</p>
@@ -531,9 +531,9 @@ export default function DoubleMajorPage() {
                   {analysis.extraRequired.length === 0 ? (
                     <p className="opacity-50 text-sm py-8 text-center">Không có môn bắt buộc nào phải học thêm.</p>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:max-h-[500px] md:overflow-y-auto md:pr-2">
                       {analysis.extraRequired.map((s, i) => (
-                        <div key={`extra-${i}`} className="p-3 bg-background/50 rounded-lg border border-border/50 text-sm flex justify-between items-center">
+                        <div key={`extra-${i}`} className="p-3 bg-background/50 rounded-xl border border-border/50 text-sm flex justify-between items-start gap-3">
                           <div>
                             <p className="font-medium">{s.name}</p>
                             <p className="opacity-60 text-xs">{s.subjectCode} • {s.knowledgeBlock}</p>
@@ -580,7 +580,7 @@ export default function DoubleMajorPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-8">
                     {/* Cột Ngành 1 */}
                     <div>
                       <h4 className="font-semibold mb-4 flex items-center justify-between">
@@ -589,7 +589,7 @@ export default function DoubleMajorPage() {
                           Đã tick {analysis?.m1Electives.filter(s => selectedElectives.has(s.subjectCode)).length || 0}/{analysis?.totalM1Electives || 0}
                         </span>
                       </h4>
-                      <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2">
+                      <div className="flex flex-col gap-2 md:max-h-[500px] md:overflow-y-auto md:pr-2">
                         {analysis.m1Electives.map((s, i) => {
                           const isSelected = selectedElectives.has(s.subjectCode);
                           const isSharedElec = s.isSharedElective;
@@ -600,7 +600,7 @@ export default function DoubleMajorPage() {
                             <label
                               key={`m1e-${i}`}
                               className={clsx(
-                                'p-3 rounded-lg border text-sm flex items-center gap-3 transition-all cursor-pointer',
+                                'min-h-12 p-3 rounded-xl border text-sm flex items-center gap-3 transition-[background-color,border-color,transform] duration-200 cursor-pointer active:scale-[0.99]',
                                 isSelected && isHighlighted && 'bg-amber-500/15 border-amber-500/40',
                                 isSelected && !isHighlighted && 'bg-brand-violet/10 border-brand-violet/30',
                                 !isSelected && isHighlighted && 'bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/10',
@@ -652,7 +652,7 @@ export default function DoubleMajorPage() {
                           Đã tick {stats?.selectedM2ElecCount || 0}/{analysis?.totalM2Electives || 0}
                         </span>
                       </h4>
-                      <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto pr-2">
+                      <div className="flex flex-col gap-2 md:max-h-[500px] md:overflow-y-auto md:pr-2">
                         {analysis.m2Electives.map((s, i) => {
                           const isSelected = selectedElectives.has(s.subjectCode);
                           const isSharedElec = s.isSharedElective;
@@ -663,7 +663,7 @@ export default function DoubleMajorPage() {
                             <label
                               key={`m2e-${i}`}
                               className={clsx(
-                                'p-3 rounded-lg border text-sm flex items-center gap-3 transition-all cursor-pointer',
+                                'min-h-12 p-3 rounded-xl border text-sm flex items-center gap-3 transition-[background-color,border-color,transform] duration-200 cursor-pointer active:scale-[0.99]',
                                 isSelected && isHighlighted && 'bg-amber-500/15 border-amber-500/40',
                                 isSelected && !isHighlighted && 'bg-brand-violet/10 border-brand-violet/30',
                                 !isSelected && isHighlighted && 'bg-amber-500/5 border-amber-500/20 hover:bg-amber-500/10',
