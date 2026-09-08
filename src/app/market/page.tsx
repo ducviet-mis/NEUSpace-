@@ -2,10 +2,12 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, ChevronLeft, ChevronRight, Package, PackageOpen, PlusCircle, Search, Shirt, ShoppingBag, Tag } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Lock, Package, PackageOpen, PlusCircle, Search, Shirt, ShoppingBag, Tag } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import BookListingCard, { BookListing } from '@/components/market/BookListingCard';
+import MarketplacePausedBanner from '@/components/market/MarketplacePausedBanner';
 import curriculumData from '@/data/curriculum.json';
+import { MARKETPLACE_ENABLED } from '@/lib/marketplace';
 
 type Category = 'textbook' | 'uniform' | 'other';
 
@@ -105,10 +107,16 @@ export default function MarketPage() {
           <p className="opacity-70 text-sm leading-relaxed">Mua bán giáo trình, đồng phục và đồ dùng sinh viên. Giao dịch trực tiếp, chủ động trao đổi với người bán.</p>
         </div>
         <div className="relative z-10 flex flex-col sm:flex-row md:flex-col gap-2 w-full md:w-auto">
-          <Link href="/market/sell" className="min-h-11 px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-xl font-semibold shadow-lg shadow-cyan-500/20 transition-colors flex items-center justify-center gap-2"><PlusCircle size={18} /> Đăng bán</Link>
+          {MARKETPLACE_ENABLED ? (
+            <Link href="/market/sell" className="min-h-11 px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-white rounded-xl font-semibold shadow-lg shadow-cyan-500/20 transition-colors flex items-center justify-center gap-2"><PlusCircle size={18} /> Đăng bán</Link>
+          ) : (
+            <button type="button" disabled className="min-h-11 px-5 py-3 bg-foreground/10 border border-foreground/15 text-foreground/55 rounded-xl font-semibold cursor-not-allowed flex items-center justify-center gap-2"><Lock size={18} /> Đăng bán đang tạm khóa</button>
+          )}
           <Link href="/market/my-listings" className="min-h-11 px-5 py-3 bg-background/50 hover:bg-background/80 border border-border rounded-xl font-medium transition-colors text-sm text-center">Tin đăng của tôi</Link>
         </div>
       </section>
+
+      {!MARKETPLACE_ENABLED && <MarketplacePausedBanner />}
 
       <section className="space-y-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" aria-label="Danh mục chợ sinh viên">
@@ -169,7 +177,11 @@ export default function MarketPage() {
           <PackageOpen size={48} className="text-foreground/20 mb-4" />
           <h2 className="text-xl font-bold mb-2">Chưa có tin phù hợp</h2>
           <p className="opacity-70 text-sm max-w-md mb-6">Hãy đổi từ khóa hoặc đăng món đồ đầu tiên trong danh mục này.</p>
-          <Link href="/market/sell" className="min-h-11 px-5 py-3 bg-cyan-500 text-white rounded-xl font-semibold">Đăng bán ngay</Link>
+          {MARKETPLACE_ENABLED ? (
+            <Link href="/market/sell" className="min-h-11 px-5 py-3 bg-cyan-500 text-white rounded-xl font-semibold">Đăng bán ngay</Link>
+          ) : (
+            <button type="button" disabled className="min-h-11 px-5 py-3 bg-foreground/10 border border-foreground/15 text-foreground/55 rounded-xl font-semibold cursor-not-allowed">Đăng bán đang tạm khóa</button>
+          )}
         </div>
       ) : (
         <>

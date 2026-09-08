@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, CheckCircle, Trash2, PackageOpen } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Lock, Trash2, PackageOpen } from 'lucide-react';
 import Link from 'next/link';
+import MarketplacePausedBanner from '@/components/market/MarketplacePausedBanner';
+import { MARKETPLACE_ENABLED, MARKETPLACE_PAUSED_MESSAGE } from '@/lib/marketplace';
 
 export default function MyListingsPage() {
   const [listings, setListings] = useState<any[]>([]);
@@ -41,6 +43,10 @@ export default function MyListingsPage() {
   }, []);
 
   const markAsSold = async (id: string) => {
+    if (!MARKETPLACE_ENABLED) {
+      alert(MARKETPLACE_PAUSED_MESSAGE);
+      return;
+    }
     if (!confirm('Bạn chắc chắn đã bán món đồ này? Bài đăng sẽ bị ẩn đi.')) return;
     try {
       await supabase.from('book_listings').update({ status: 'sold' }).eq('id', id);
@@ -52,6 +58,10 @@ export default function MyListingsPage() {
   };
 
   const deleteListing = async (id: string) => {
+    if (!MARKETPLACE_ENABLED) {
+      alert(MARKETPLACE_PAUSED_MESSAGE);
+      return;
+    }
     if (!confirm('Bạn chắc chắn muốn xóa bài đăng này?')) return;
     try {
       await supabase.from('book_listings').delete().eq('id', id);
@@ -73,6 +83,8 @@ export default function MyListingsPage() {
         <p className="opacity-70 text-sm">Xem và quản lý giáo trình, đồng phục và đồ dùng bạn đang bán.</p>
       </div>
 
+      {!MARKETPLACE_ENABLED && <div className="mb-6"><MarketplacePausedBanner /></div>}
+
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin"></div>
@@ -86,9 +98,13 @@ export default function MyListingsPage() {
           <PackageOpen size={48} className="text-foreground/20 mb-4" />
           <h3 className="text-xl font-bold mb-2">Bạn chưa có tin đăng nào</h3>
           <p className="opacity-70 text-sm mb-6">Bạn có thể đăng giáo trình, đồng phục hoặc đồ dùng không còn sử dụng.</p>
-          <Link href="/market/sell" className="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-white rounded-xl font-medium transition-colors">
-            Đăng bán ngay
-          </Link>
+          {MARKETPLACE_ENABLED ? (
+            <Link href="/market/sell" className="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-white rounded-xl font-medium transition-colors">
+              Đăng bán ngay
+            </Link>
+          ) : (
+            <span className="inline-flex min-h-11 items-center rounded-xl border border-foreground/15 bg-foreground/10 px-5 text-sm font-medium text-foreground/55"><Lock size={16} className="mr-2" />Đăng bán đang tạm khóa</span>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
@@ -122,14 +138,18 @@ export default function MyListingsPage() {
                   {listing.status === 'available' && (
                     <button 
                       onClick={() => markAsSold(listing.id)}
-                      className="px-4 py-2 bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white border border-green-500/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                      disabled={!MARKETPLACE_ENABLED}
+                      title={!MARKETPLACE_ENABLED ? MARKETPLACE_PAUSED_MESSAGE : undefined}
+                      className="px-4 py-2 bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white border border-green-500/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       <CheckCircle size={16} /> Đánh dấu đã bán
                     </button>
                   )}
                   <button 
                     onClick={() => deleteListing(listing.id)}
-                    className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                    disabled={!MARKETPLACE_ENABLED}
+                    title={!MARKETPLACE_ENABLED ? MARKETPLACE_PAUSED_MESSAGE : undefined}
+                    className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <Trash2 size={16} /> Xóa bài
                   </button>

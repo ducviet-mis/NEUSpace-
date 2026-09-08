@@ -53,6 +53,7 @@ export default function TimetablePage() {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hideEmptyDays, setHideEmptyDays] = useState(false);
+  const [mobileView, setMobileView] = useState<'today' | 'week'>('today');
   const [draggedEventId, setDraggedEventId] = useState<string | null>(null);
   const [dragOverCell, setDragOverCell] = useState<{ day: number; shift: string } | null>(null);
 
@@ -277,6 +278,15 @@ export default function TimetablePage() {
     return filtered.length > 0 ? filtered : [DAYS[0]];
   }, [hideEmptyDays, events]);
 
+  const todayDayId = new Date().getDay() || 8;
+  const today = DAYS.find((item) => item.id === todayDayId) ?? DAYS[0];
+  const todayEvents = useMemo(
+    () => events
+      .filter((event) => event.dayOfWeek === todayDayId)
+      .sort((a, b) => a.startTime.localeCompare(b.startTime)),
+    [events, todayDayId]
+  );
+
   if (loading) {
     return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="animate-spin text-cyan-400 w-8 h-8" /></div>;
   }
@@ -320,8 +330,91 @@ export default function TimetablePage() {
         </div>
       </div>
 
+      {/* Mobile-first schedule view: daily agenda is easier to scan than a wide weekly grid. */}
+      <div className="md:hidden rounded-2xl border border-border/60 bg-foreground/[0.04] p-1.5">
+        <div className="grid grid-cols-2 gap-1.5" role="tablist" aria-label="Chế độ xem thời khóa biểu">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mobileView === 'today'}
+            onClick={() => setMobileView('today')}
+            className={`min-h-11 rounded-xl px-3 text-sm font-semibold transition-all ${mobileView === 'today' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20' : 'text-foreground/65 hover:bg-foreground/[0.07]'}`}
+          >
+            Hôm nay · {today.short}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mobileView === 'week'}
+            onClick={() => setMobileView('week')}
+            className={`min-h-11 rounded-xl px-3 text-sm font-semibold transition-all ${mobileView === 'week' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/20' : 'text-foreground/65 hover:bg-foreground/[0.07]'}`}
+          >
+            Cả tuần
+          </button>
+        </div>
+      </div>
+
+      {mobileView === 'today' && (
+        <section className="md:hidden glass-panel overflow-hidden border-border/50 animate-in fade-in slide-in-from-bottom-2 duration-200" aria-label={`Lịch ${today.label}`}>
+          <div className="flex items-center justify-between border-b border-border/50 px-5 py-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-cyan-400">Lịch của bạn</p>
+              <h2 className="mt-1 text-xl font-bold">{today.label}</h2>
+            </div>
+            <span className="rounded-full border border-cyan-400/25 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-300">
+              {todayEvents.length} lịch
+            </span>
+          </div>
+
+          {todayEvents.length === 0 ? (
+            <div className="px-5 py-12 text-center">
+              <CalendarIcon className="mx-auto mb-3 text-cyan-400/60" size={32} />
+              <h3 className="font-semibold">Hôm nay chưa có lịch</h3>
+              <p className="mt-1 text-sm text-foreground/60">Tận hưởng thời gian trống, hoặc thêm một lịch mới.</p>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
+                className="mt-5 min-h-11 rounded-xl bg-cyan-500 px-4 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20"
+              >
+                Thêm lịch
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3 p-4">
+              {todayEvents.map((event) => {
+                const colorClass = getEventColor(event.name);
+                const shiftLabel = NEU_SHIFTS.find((item) => item.id === event.shift)?.label ?? 'Khác/Tối';
+
+                return (
+                  <article key={event.id} className={`rounded-2xl border bg-gradient-to-br p-4 shadow-sm ${colorClass}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold uppercase tracking-wide opacity-80">{shiftLabel}</p>
+                        <h3 className="mt-1 break-words text-base font-bold leading-snug">{event.name}</h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeEvent(event.id, event.dbTable)}
+                        aria-label={`Xóa ${event.name}`}
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background/40 text-red-400 transition-colors hover:bg-red-500 hover:text-white"
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium opacity-90">
+                      <span className="flex items-center gap-1.5"><Clock size={15} />{event.startTime} - {event.endTime}</span>
+                      {event.room && <span className="flex items-center gap-1.5"><MapPin size={15} />{event.room}</span>}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Lưới Thời Gian (Time Grid Calendar) */}
-      <div className="glass-panel overflow-hidden border-border/50">
+      <div className={`${mobileView === 'today' ? 'hidden md:block' : 'block'} glass-panel overflow-hidden border-border/50 animate-in fade-in duration-200`}>
         <div className="overflow-x-auto">
           <div className="min-w-[800px]">
             

@@ -7,6 +7,7 @@ import curriculumData from '@/data/curriculum.json';
 import { Upload, X, Loader2, ArrowLeft, Image as ImageIcon, BookOpen, Shirt, Package } from 'lucide-react';
 import Link from 'next/link';
 import { createUserScopedImagePath, validateImageSelection } from '@/lib/uploadValidation';
+import { MARKETPLACE_ENABLED, MARKETPLACE_PAUSED_MESSAGE } from '@/lib/marketplace';
 
 export default function SellPage() {
   const router = useRouter();
@@ -97,6 +98,8 @@ export default function SellPage() {
   };
 
   useEffect(() => {
+    if (!MARKETPLACE_ENABLED) return;
+
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -164,6 +167,10 @@ export default function SellPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!MARKETPLACE_ENABLED) {
+      setError(MARKETPLACE_PAUSED_MESSAGE);
+      return;
+    }
     if (!subject.trim()) return setError(category === 'textbook' ? 'Vui lòng nhập tên giáo trình hoặc môn học' : 'Vui lòng nhập tên món đồ');
     if (!contactInfo) return setError('Vui lòng nhập thông tin liên hệ');
     if (images.length === 0) return setError('Vui lòng tải lên ít nhất 1 ảnh');
@@ -202,6 +209,26 @@ export default function SellPage() {
       setLoading(false);
     }
   };
+
+  if (!MARKETPLACE_ENABLED) {
+    return (
+      <div className="max-w-3xl mx-auto pb-12 animate-in fade-in duration-300">
+        <Link href="/market" className="inline-flex items-center gap-2 text-foreground/70 hover:text-cyan-500 transition-colors mb-6 text-sm font-medium">
+          <ArrowLeft size={16} /> Quay lại chợ
+        </Link>
+        <section className="glass-panel p-8 sm:p-12 text-center border-amber-400/25">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-400/10 text-amber-300">
+            <Upload size={26} aria-hidden="true" />
+          </div>
+          <h1 className="text-2xl font-bold">Đăng bán đang tạm khóa</h1>
+          <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-foreground/70">{MARKETPLACE_PAUSED_MESSAGE}</p>
+          <Link href="/market" className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-cyan-500 px-5 text-sm font-semibold text-white shadow-lg shadow-cyan-500/20 transition-colors hover:bg-cyan-400">
+            Xem các tin đang có
+          </Link>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto pb-12 animate-in fade-in duration-500">
