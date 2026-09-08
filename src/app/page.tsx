@@ -125,15 +125,15 @@ export default function Home() {
 
     return (
       <div className="flex flex-col h-full relative">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold tracking-wide text-foreground">Tháng {currentMonth + 1}/{currentYear}</h3>
-          <div className="flex gap-2 text-foreground/50">
-            <ChevronLeft size={20} className="cursor-pointer hover:text-foreground transition-colors" onClick={handlePrevMonth} />
-            <ChevronRight size={20} className="cursor-pointer hover:text-foreground transition-colors" onClick={handleNextMonth} />
+        <div className="flex justify-between items-center mb-5">
+          <h3 className="text-xl font-bold tracking-tight text-foreground">Tháng {currentMonth + 1}/{currentYear}</h3>
+          <div className="flex gap-1 text-foreground/55">
+            <button type="button" aria-label="Tháng trước" className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-foreground/8 hover:text-foreground active:scale-95 transition-[background-color,color,transform] duration-200" onClick={handlePrevMonth}><ChevronLeft size={20} /></button>
+            <button type="button" aria-label="Tháng sau" className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-foreground/8 hover:text-foreground active:scale-95 transition-[background-color,color,transform] duration-200" onClick={handleNextMonth}><ChevronRight size={20} /></button>
           </div>
         </div>
         
-        <div className="grid grid-cols-7 text-center bg-red-500 text-foreground rounded-full py-2.5 mb-4 text-[11px] sm:text-sm font-bold shadow-[0_4px_15px_rgba(239,68,68,0.4)]">
+        <div className="grid grid-cols-7 text-center bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-2xl py-2.5 mb-4 text-xs sm:text-sm font-bold shadow-[0_6px_18px_rgba(6,182,212,0.24)]">
           <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
         </div>
         
@@ -154,7 +154,7 @@ export default function Home() {
             let wrapperClass = "w-8 h-8 sm:w-10 sm:h-10 mx-auto flex flex-col items-center justify-center rounded-full cursor-pointer transition-all relative ";
             
             if (isToday) {
-              wrapperClass += "bg-red-500 text-foreground font-bold shadow-md shadow-red-500/40";
+              wrapperClass += "bg-cyan-500 text-white font-bold shadow-md shadow-cyan-500/35";
             } else if (isSelected) {
               wrapperClass += "border border-cyan-400 bg-foreground/10 text-foreground font-bold";
             } else {
@@ -195,32 +195,32 @@ export default function Home() {
   const todaysClassesCount = allEvents.filter(e => e.day_of_week === todayNeuDay).length;
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-full lg:h-full animate-in fade-in duration-700">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-shrink-0">
-        <div className="lg:col-span-5 xl:col-span-4 glass-panel p-6 relative overflow-hidden flex flex-col justify-center min-h-[160px]">
+    <div className="flex flex-col gap-5 md:gap-6 w-full max-w-full lg:h-full animate-in fade-in duration-500">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:gap-6 flex-shrink-0">
+        <div className="lg:col-span-5 xl:col-span-4 glass-panel p-5 md:p-6 relative overflow-hidden flex flex-col justify-center min-h-[160px]">
           <div className="absolute right-4 top-4 text-foreground/30 text-3xl font-serif pointer-events-none">✦</div>
           
           <h3 className="text-xl md:text-2xl font-semibold mb-1 text-foreground drop-shadow-md tracking-wide">
             Xin chào, <span className="text-foreground">{profile?.full_name?.split(' ').pop() || 'Sinh viên'}</span> 👋
           </h3>
-          <p className="text-sm text-red-400 mb-5 font-medium hover:underline cursor-pointer">
+          <p className="text-sm text-cyan-600 dark:text-cyan-300 mb-5 font-medium hover:underline cursor-pointer">
             {profile?.major_name || 'Chưa cập nhật chuyên ngành'}
           </p>
           <div>
-            <Link href="/settings" className="inline-block bg-gradient-to-r from-red-500 to-rose-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-[0_4px_15px_rgba(239,68,68,0.4)] hover:scale-105 transition-transform relative z-10">
+            <Link href="/settings" className="inline-flex min-h-11 items-center bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-[0_6px_18px_rgba(6,182,212,0.24)] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-200 relative z-10">
               Hồ sơ sinh viên
             </Link>
           </div>
         </div>
 
-        <div className="lg:col-span-7 xl:col-span-8 grid grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="lg:col-span-7 xl:col-span-8 grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {[
             { label: 'GPA Hệ 4', value: overallStats.gpa4.toFixed(2), unit: '/4.00', icon: Award, color: 'text-cyan-400', isGpa: true },
             { label: 'GPA Hệ 10', value: overallStats.gpa10.toFixed(2), unit: '/10.0', icon: Calculator, color: 'text-blue-400', isGpa: true },
             { label: 'Tín chỉ', value: overallStats.totalCredits, unit: '/130 TC', icon: BookOpen, color: 'text-purple-400', isGpa: false },
             { label: 'Hoạt động hôm nay', value: todaysClassesCount, unit: 'Ca học', icon: Clock, color: 'text-red-400', isGpa: false },
           ].map((stat, idx) => (
-            <div key={idx} className="glass-card p-5 flex flex-col justify-center relative overflow-hidden group">
+            <div key={idx} className="glass-card p-4 sm:p-5 flex flex-col justify-center relative overflow-hidden group">
                <div className="absolute -right-6 -top-6 opacity-10 group-hover:opacity-20 transition-opacity">
                  <stat.icon size={80} />
                </div>
@@ -247,12 +247,12 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:flex-1 lg:min-h-[400px]">
-        <div className="glass-panel min-h-[440px] p-6 flex flex-col relative overflow-hidden lg:min-h-0">
+      <div className="grid grid-cols-1 gap-5 md:gap-6 lg:grid-cols-3 lg:flex-1 lg:min-h-[400px]">
+        <div className="glass-panel min-h-[440px] p-5 md:p-6 flex flex-col relative overflow-hidden lg:min-h-0">
            {renderMiniCalendar()}
         </div>
 
-        <div className="glass-panel min-h-[440px] p-6 flex flex-col relative overflow-hidden lg:min-h-0">
+        <div className="glass-panel min-h-[440px] p-5 md:p-6 flex flex-col relative overflow-hidden lg:min-h-0">
           <div className="flex justify-between items-center mb-4 relative z-10">
             <h3 className="text-xl font-semibold tracking-wide text-foreground">Tiến độ tốt nghiệp</h3>
           </div>
@@ -334,7 +334,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="glass-panel min-h-[360px] p-6 flex flex-col relative overflow-hidden lg:min-h-0">
+        <div className="glass-panel min-h-[360px] p-5 md:p-6 flex flex-col relative overflow-hidden lg:min-h-0">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold tracking-wide text-foreground">{scheduleTitle}</h3>
           </div>
@@ -383,7 +383,7 @@ export default function Home() {
           </div>
 
           <div className="flex justify-center mt-4 pt-4 border-t border-foreground/10">
-            <Link href="/timetable" className="bg-gradient-to-r from-red-500 to-rose-500 text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-[0_4px_15px_rgba(239,68,68,0.4)] hover:scale-105 transition-transform">
+            <Link href="/timetable" className="min-h-11 inline-flex items-center bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-[0_6px_18px_rgba(6,182,212,0.24)] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-200">
               Xem toàn bộ
             </Link>
           </div>

@@ -141,23 +141,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const itemWrapperClass = isDesktopExpanded 
     ? "justify-start px-4" 
     : "justify-start px-4 md:justify-center md:px-0";
-  const activeIndicatorClass = "absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)] rounded-r-full";
+  const activeIndicatorClass = "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.72)] rounded-r-full";
 
   return (
     <div className="min-h-dvh md:h-dvh w-screen overflow-x-hidden md:overflow-hidden flex bg-background">
       
       {/* Decorative Background Meshes for Liquid Glassmorphism */}
-      <div className="fixed top-10 left-1/3 w-96 h-96 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 blur-[100px] pointer-events-none z-0 transition-colors duration-1000"></div>
-      <div className="fixed bottom-0 right-10 w-[500px] h-[500px] rounded-full bg-blue-400/10 dark:bg-indigo-500/20 blur-[120px] pointer-events-none z-0 transition-colors duration-1000"></div>
+      <div className="fixed -top-36 left-[12%] h-[28rem] w-[28rem] rounded-full bg-cyan-400/10 dark:bg-cyan-500/12 blur-[110px] pointer-events-none z-0"></div>
+      <div className="fixed -bottom-44 right-[4%] h-[34rem] w-[34rem] rounded-full bg-blue-500/10 dark:bg-indigo-500/14 blur-[130px] pointer-events-none z-0"></div>
 
       {/* Main Desktop App Window */}
       <div className="w-full min-h-dvh md:h-full flex overflow-visible md:overflow-hidden relative z-10">
         
         {/* Desktop sidebar. Mobile navigation is rendered separately at the root
             so it can never be affected by the document scroll container. */}
-        <aside className={`hidden md:flex md:static ${asideWidth} border-r border-glass-border flex-col py-6 flex-shrink-0 overflow-hidden bg-glass-panel/30 backdrop-blur-2xl shadow-none`}>
+        <aside className={`hidden md:flex md:static ${asideWidth} border-r border-glass-border flex-col py-5 flex-shrink-0 overflow-hidden bg-glass-panel/65 backdrop-blur-2xl shadow-none transition-[width,background-color] duration-200`}>
             
-            <div className={`flex items-center ${isDesktopExpanded ? 'justify-between px-6' : 'justify-center'} mb-8 w-full`}>
+            <div className={`flex items-center ${isDesktopExpanded ? 'justify-between px-6' : 'justify-center'} mb-6 w-full`}>
               <Menu 
                 size={24} 
                 className="text-foreground/70 cursor-pointer hover:text-foreground transition-colors hidden md:block" 
@@ -172,14 +172,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
             
-            <nav className="flex-1 flex flex-col gap-3 w-full px-4 overflow-y-auto no-scrollbar">
+            <nav className="flex-1 flex flex-col gap-2 w-full px-3 overflow-y-auto no-scrollbar">
               {NAV_ITEMS.map(item => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
                 return (
                   <Link key={item.href} href={item.href} className="w-full relative group" onClick={() => setIsMobileOpen(false)} aria-current={isActive ? 'page' : undefined}>
                     {isActive && <div className={activeIndicatorClass} />}
-                    <div className={`p-3 rounded-xl transition-all flex items-center ${itemWrapperClass} ${isActive ? 'bg-gradient-to-r from-red-500 to-rose-500 shadow-lg shadow-red-500/30 text-white' : 'text-foreground/60 hover:bg-foreground/10 hover:text-foreground'}`} title={!isDesktopExpanded ? item.name : undefined}>
+                    <div className={`min-h-12 p-3 rounded-2xl transition-[background-color,color,box-shadow,transform] duration-200 flex items-center ${itemWrapperClass} ${isActive ? 'bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg shadow-cyan-500/20 text-white' : 'text-foreground/65 hover:bg-foreground/8 hover:text-foreground hover:translate-x-0.5'}`} title={!isDesktopExpanded ? item.name : undefined}>
                       <Icon size={24} strokeWidth={isActive ? 2.5 : 2} className="flex-shrink-0" />
                       <span className={`font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${textVisibilityClass}`}>
                         {item.name}
@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex-1 min-w-0 min-h-dvh md:min-h-0 flex flex-col md:h-full md:overflow-hidden text-foreground relative">
             
             {/* Header */}
-            <header className="sticky top-0 z-30 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:static md:z-20 md:h-24 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 md:px-8 flex-shrink-0 bg-glass-panel/50 backdrop-blur-2xl transition-colors duration-500">
+            <header className="sticky top-0 z-30 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:static md:z-20 md:h-20 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 sm:px-5 md:px-8 flex-shrink-0 bg-glass-panel/78 backdrop-blur-2xl transition-colors duration-200">
               <div className="flex items-center gap-2.5 md:gap-4 min-w-0">
                 <button className="md:hidden w-11 h-11 text-foreground/70 hover:text-foreground active:bg-foreground/10 rounded-xl transition-colors flex items-center justify-center" onClick={() => setIsMobileOpen(true)} aria-label="Mở menu">
                   <Menu size={24} />
@@ -334,24 +334,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </header>
 
             {/* Scrollable Content */}
-            <main className="w-full touch-pan-y p-4 pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:flex-1 md:min-h-0 md:overflow-y-auto md:p-8 scroll-smooth no-scrollbar">
+            <main className="w-full touch-pan-y p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] md:flex-1 md:min-h-0 md:overflow-y-auto md:p-7 lg:p-8 xl:px-10 scroll-smooth no-scrollbar">
               {children}
             </main>
         </div>
       </div>
-      <nav className="fixed md:hidden inset-x-0 bottom-0 z-30 border-t border-glass-border bg-background/90 backdrop-blur-2xl px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]" aria-label="Điều hướng chính">
-        <div className="grid grid-cols-5 max-w-md mx-auto gap-1">
+      <nav className="fixed md:hidden inset-x-0 bottom-0 z-30 border-t border-glass-border bg-background/92 shadow-[0_-10px_30px_rgba(1,10,25,0.16)] backdrop-blur-2xl px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]" aria-label="Điều hướng chính">
+        <div className="grid grid-cols-5 max-w-md mx-auto gap-1.5">
           {MOBILE_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
             return (
-              <Link key={item.href} href={item.href} aria-current={isActive ? 'page' : undefined} className={`min-h-12 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors ${isActive ? 'bg-cyan-500/15 text-cyan-500 dark:text-cyan-300' : 'text-foreground/60 active:bg-foreground/10'}`}>
+              <Link key={item.href} href={item.href} aria-current={isActive ? 'page' : undefined} className={`min-h-12 rounded-2xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition-[background-color,color,transform] duration-200 ${isActive ? 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-300' : 'text-foreground/60 active:scale-95 active:bg-foreground/10'}`}>
                 <Icon size={21} strokeWidth={isActive ? 2.5 : 2} />
                 <span className="leading-none">{item.name}</span>
               </Link>
             );
           })}
-          <button type="button" onClick={() => setIsMobileOpen(true)} aria-label="Mở thêm chức năng" className="min-h-12 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-foreground/60 active:bg-foreground/10 transition-colors">
+          <button type="button" onClick={() => setIsMobileOpen(true)} aria-label="Mở thêm chức năng" className="min-h-12 rounded-2xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold text-foreground/60 active:scale-95 active:bg-foreground/10 transition-[background-color,transform] duration-200">
             <MoreHorizontal size={22} />
             <span className="leading-none">Thêm</span>
           </button>
@@ -392,7 +392,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href={item.href}
                     onClick={() => setIsMobileOpen(false)}
                     aria-current={isActive ? 'page' : undefined}
-                    className={`flex min-h-12 items-center gap-4 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive ? 'bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-500/30' : 'text-foreground/75 active:bg-foreground/10'}`}
+                    className={`flex min-h-12 items-center gap-4 rounded-2xl px-4 py-3 text-sm font-semibold transition-[background-color,color,transform] duration-200 ${isActive ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/20' : 'text-foreground/75 active:scale-[0.99] active:bg-foreground/10'}`}
                   >
                     <Icon size={22} strokeWidth={isActive ? 2.5 : 2} aria-hidden="true" />
                     <span>{item.name}</span>
