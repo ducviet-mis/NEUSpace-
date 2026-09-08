@@ -345,7 +345,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             const Icon = item.icon;
             const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
             return (
-              <Link key={item.href} href={item.href} aria-current={isActive ? 'page' : undefined} className={`min-h-12 rounded-2xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition-[background-color,color,transform] duration-200 ${isActive ? 'bg-cyan-500/15 text-cyan-600 dark:text-cyan-300' : 'text-foreground/60 active:scale-95 active:bg-foreground/10'}`}>
+              <Link key={item.href} href={item.href} aria-current={isActive ? 'page' : undefined} className={`min-h-12 rounded-2xl flex flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition-[background-color,color,transform,box-shadow] duration-200 ${isActive ? 'bg-cyan-800 text-white shadow-[0_4px_12px_rgba(14,116,144,0.20)] dark:bg-cyan-500/25 dark:text-cyan-200 dark:shadow-none' : 'text-foreground/60 active:scale-95 active:bg-foreground/10'}`}>
                 <Icon size={21} strokeWidth={isActive ? 2.5 : 2} />
                 <span className="leading-none">{item.name}</span>
               </Link>

@@ -228,7 +228,7 @@ export default function Home() {
                {stat.isGpa && (
                  <button 
                    onClick={() => setShowGpa(!showGpa)} 
-                   className="absolute top-4 left-4 text-foreground/40 hover:text-foreground/80 transition-colors z-20 p-1"
+                   className="absolute top-1 left-3 text-foreground/40 hover:text-foreground/80 transition-colors z-20 p-1"
                    title={showGpa ? "Ẩn GPA" : "Hiện GPA"}
                  >
                    {showGpa ? <EyeOff size={16} /> : <Eye size={16} />}
