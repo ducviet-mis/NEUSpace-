@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex-1 min-w-0 min-h-dvh md:min-h-0 flex flex-col md:h-full md:overflow-hidden text-foreground relative">
             
             {/* Header */}
-            <header className="sticky top-0 z-30 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:static md:z-20 md:h-20 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 sm:px-5 md:px-8 flex-shrink-0 bg-glass-panel/78 backdrop-blur-2xl transition-colors duration-200">
+            <header className="app-chrome sticky top-0 z-30 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] md:static md:z-20 md:h-20 md:pt-0 border-b border-glass-border flex items-center justify-between px-3 sm:px-5 md:px-8 flex-shrink-0 backdrop-blur-2xl transition-colors duration-200">
               <div className="flex items-center gap-2.5 md:gap-4 min-w-0">
                 <button className="md:hidden w-11 h-11 text-foreground/70 hover:text-foreground active:bg-foreground/10 rounded-xl transition-colors flex items-center justify-center" onClick={() => setIsMobileOpen(true)} aria-label="Mở menu">
                   <Menu size={24} />
@@ -339,7 +339,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </main>
         </div>
       </div>
-      <nav className="fixed md:hidden inset-x-0 bottom-0 z-30 border-t border-glass-border bg-background/92 shadow-[0_-10px_30px_rgba(1,10,25,0.16)] backdrop-blur-2xl px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]" aria-label="Điều hướng chính">
+      <nav className="app-chrome fixed md:hidden inset-x-0 bottom-0 z-30 border-t border-glass-border backdrop-blur-2xl px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]" aria-label="Điều hướng chính">
         <div className="grid grid-cols-5 max-w-md mx-auto gap-1.5">
           {MOBILE_NAV_ITEMS.map((item) => {
             const Icon = item.icon;
