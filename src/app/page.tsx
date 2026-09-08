@@ -195,7 +195,7 @@ export default function Home() {
   const todaysClassesCount = allEvents.filter(e => e.day_of_week === todayNeuDay).length;
 
   return (
-    <div className="flex flex-col gap-6 h-full animate-in fade-in duration-700 w-full max-w-full">
+    <div className="flex flex-col gap-6 w-full max-w-full lg:h-full animate-in fade-in duration-700">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-shrink-0">
         <div className="lg:col-span-5 xl:col-span-4 glass-panel p-6 relative overflow-hidden flex flex-col justify-center min-h-[160px]">
           <div className="absolute right-4 top-4 text-foreground/30 text-3xl font-serif pointer-events-none">✦</div>
@@ -247,12 +247,12 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[400px]">
-        <div className="glass-panel p-6 flex flex-col relative overflow-hidden">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:flex-1 lg:min-h-[400px]">
+        <div className="glass-panel min-h-[440px] p-6 flex flex-col relative overflow-hidden lg:min-h-0">
            {renderMiniCalendar()}
         </div>
 
-        <div className="glass-panel p-6 flex flex-col relative overflow-hidden">
+        <div className="glass-panel min-h-[440px] p-6 flex flex-col relative overflow-hidden lg:min-h-0">
           <div className="flex justify-between items-center mb-4 relative z-10">
             <h3 className="text-xl font-semibold tracking-wide text-foreground">Tiến độ tốt nghiệp</h3>
           </div>
@@ -334,12 +334,12 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="glass-panel p-6 flex flex-col relative overflow-hidden">
+        <div className="glass-panel min-h-[360px] p-6 flex flex-col relative overflow-hidden lg:min-h-0">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold tracking-wide text-foreground">{scheduleTitle}</h3>
           </div>
           
-          <div className="w-full overflow-y-auto flex-1 pr-2 flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-4 lg:flex-1 lg:overflow-y-auto lg:pr-2">
             
             {/* Danh sách các môn học */}
             {displayTimetableClasses.length > 0 && (
