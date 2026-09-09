@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, CheckCircle2, Heart, Lightbulb, MessageSquare, MonitorSmartphone, Send, ShieldCheck, Sparkles, Star, Wrench } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 type FeedbackTopic = 'experience' | 'feature' | 'idea' | 'issue';
 
@@ -27,6 +28,9 @@ export default function FeedbackPage() {
   const [featureArea, setFeatureArea] = useState('');
   const [message, setMessage] = useState('');
   const [allowContact, setAllowContact] = useState(false);
+  const [contactEmail, setContactEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const selectedTopics = TOPICS.filter(item => topics.includes(item.id));
   const prompt = topics.length === 1
@@ -46,13 +50,38 @@ export default function FeedbackPage() {
     if (step === 1 && rating > 0) setStep(2);
     if (step === 2 && topics.length > 0) setStep(3);
   };
-  const submitPreview = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitFeedback = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (topics.length === 0 || message.trim().length < 12) return;
-    setSubmitted(true);
+    const trimmedMessage = message.trim();
+    const trimmedEmail = contactEmail.trim().toLowerCase();
+    if (topics.length === 0 || trimmedMessage.length < 12) return;
+    if (allowContact && !trimmedEmail) {
+      setSubmitError('Vui lòng nhập email nếu bạn muốn neuOS liên hệ lại.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      const { error } = await supabase.from('feedback_submissions').insert({
+        rating,
+        topics,
+        feature_area: featureArea || null,
+        message: trimmedMessage,
+        allow_contact: allowContact,
+        contact_email: allowContact ? trimmedEmail : null,
+        source_path: '/feedback',
+      });
+      if (error) throw error;
+      setSubmitted(true);
+    } catch {
+      setSubmitError('Chưa gửi được góp ý. Vui lòng kiểm tra kết nối và thử lại.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   const restart = () => {
-    setStep(1); setRating(0); setTopics([]); setFeatureArea(''); setMessage(''); setAllowContact(false); setSubmitted(false);
+    setStep(1); setRating(0); setTopics([]); setFeatureArea(''); setMessage(''); setAllowContact(false); setContactEmail(''); setSubmitError(''); setSubmitted(false);
   };
 
   return (
@@ -77,7 +106,7 @@ export default function FeedbackPage() {
           </aside>
 
           <div className="min-h-[27rem] px-5 py-7 sm:px-8 sm:py-9">
-            {submitted ? <div className="flex min-h-[22rem] flex-col items-center justify-center text-center"><div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"><CheckCircle2 size={34} aria-hidden="true" /></div><h3 className="mt-5 text-2xl font-bold text-foreground">Cảm ơn Neuer!</h3><p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/70">Bạn đã hoàn thành bản xem thử biểu mẫu góp ý. Khi bạn duyệt giao diện này, mình sẽ kết nối phần lưu góp ý riêng tư để đội ngũ neuOS có thể xử lý chúng.</p><button type="button" onClick={restart} className="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl border border-border px-4 text-sm font-semibold text-foreground transition-colors hover:bg-foreground/8">Gửi một góp ý khác</button></div> : step === 1 ? <div className="mx-auto max-w-xl">
+            {submitted ? <div className="flex min-h-[22rem] flex-col items-center justify-center text-center"><div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"><CheckCircle2 size={34} aria-hidden="true" /></div><h3 className="mt-5 text-2xl font-bold text-foreground">Cảm ơn bạn!</h3><p className="mt-2 max-w-md text-sm leading-relaxed text-foreground/70">Góp ý của bạn đã được gửi riêng tư đến đội ngũ neuOS. Cảm ơn bạn đã giúp ứng dụng tốt hơn mỗi ngày.</p><button type="button" onClick={restart} className="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl border border-border px-4 text-sm font-semibold text-foreground transition-colors hover:bg-foreground/8">Gửi một góp ý khác</button></div> : step === 1 ? <div className="mx-auto max-w-xl">
               <p className="text-sm font-semibold uppercase tracking-[0.1em] text-cyan-700 dark:text-cyan-300">Bước 1 / 3</p><h3 className="mt-2 text-2xl font-bold text-foreground">Bạn thấy trải nghiệm neuOS thế nào?</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">Chỉ cần chọn số sao gần nhất với cảm nhận hiện tại của bạn.</p>
               <div className="mt-8 rounded-2xl border border-border/70 bg-background/30 p-4 sm:p-6"><div className="flex items-center justify-center gap-1.5 sm:gap-3" role="radiogroup" aria-label="Đánh giá trải nghiệm">{[1, 2, 3, 4, 5].map(value => { const selected = value <= rating; return <button key={value} type="button" role="radio" aria-checked={rating === value} aria-label={`${value} sao — ${RATING_COPY[value]}`} onClick={() => setRating(value)} className={`flex h-12 w-12 items-center justify-center rounded-xl transition-[background-color,color,transform] hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 sm:h-14 sm:w-14 ${selected ? 'bg-amber-400/15 text-amber-500' : 'text-foreground/20 hover:bg-foreground/5 hover:text-amber-400/60'}`}><Star size={29} fill={selected ? 'currentColor' : 'none'} aria-hidden="true" /></button>; })}</div><p className="mt-5 min-h-6 text-center text-sm font-semibold text-foreground" aria-live="polite">{rating ? RATING_COPY[rating] : 'Chọn từ 1 đến 5 sao'}</p></div>
               <div className="mt-7 flex justify-end"><button type="button" onClick={goNext} disabled={!rating} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-700 px-5 text-sm font-semibold text-white shadow-[0_6px_18px_rgba(14,116,144,0.20)] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-cyan-500/25 dark:text-cyan-100 dark:shadow-none">Tiếp tục <ArrowRight size={17} aria-hidden="true" /></button></div>
@@ -87,16 +116,18 @@ export default function FeedbackPage() {
               <div className="mt-4 grid gap-3 sm:grid-cols-2">{TOPICS.map(item => { const Icon = item.icon; const isSelected = topics.includes(item.id); return <button key={item.id} type="button" onClick={() => toggleTopic(item.id)} aria-pressed={isSelected} className={`min-h-28 rounded-2xl border p-4 text-left transition-[border-color,background-color,transform,box-shadow] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 ${isSelected ? `${item.tone} shadow-sm` : 'border-border/70 bg-background/25 text-foreground hover:bg-foreground/[0.05]'}`}><Icon size={22} className={isSelected ? '' : 'text-foreground/65'} aria-hidden="true" /><p className="mt-3 text-sm font-semibold">{item.title}</p><p className="mt-1 text-xs leading-relaxed opacity-70">{item.description}</p></button>; })}</div>
               {(topics.includes('feature') || topics.includes('issue')) && <fieldset className="mt-6"><legend className="text-sm font-semibold text-foreground">Chức năng liên quan</legend><div className="mt-3 flex flex-wrap gap-2">{FEATURE_AREAS.map(area => <button key={area} type="button" onClick={() => setFeatureArea(area)} aria-pressed={featureArea === area} className={`min-h-10 rounded-full border px-3 text-xs font-semibold transition-colors ${featureArea === area ? 'border-cyan-600 bg-cyan-700 text-white dark:border-cyan-400 dark:bg-cyan-500/25 dark:text-cyan-100' : 'border-border bg-background/30 text-foreground/70 hover:bg-foreground/8'}`}>{area}</button>)}</div></fieldset>}
               <div className="mt-7 flex items-center justify-between gap-3"><button type="button" onClick={() => setStep(1)} className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-foreground/70 transition-colors hover:bg-foreground/8 hover:text-foreground"><ArrowLeft size={17} aria-hidden="true" /> Quay lại</button><button type="button" onClick={goNext} disabled={topics.length === 0} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-700 px-5 text-sm font-semibold text-white shadow-[0_6px_18px_rgba(14,116,144,0.20)] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-cyan-500/25 dark:text-cyan-100 dark:shadow-none">Tiếp tục <ArrowRight size={17} aria-hidden="true" /></button></div>
-            </div> : <form onSubmit={submitPreview}>
+            </div> : <form onSubmit={submitFeedback}>
               <p className="text-sm font-semibold uppercase tracking-[0.1em] text-cyan-700 dark:text-cyan-300">Bước 3 / 3</p><h3 className="mt-2 text-2xl font-bold text-foreground">{selectedTopics.length === 1 ? selectedTopics[0].title : 'Chia sẻ góp ý của bạn'}</h3><p className="mt-2 text-sm leading-relaxed text-foreground/70">Bạn có thể viết ngắn gọn; điều quan trọng nhất là tình huống thực tế bạn đã gặp.</p><div className="mt-4 flex flex-wrap gap-2">{selectedTopics.map(item => <span key={item.id} className="inline-flex rounded-full bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-700 dark:text-cyan-300">{item.title}</span>)}{featureArea && <span className="inline-flex rounded-full bg-cyan-500/10 px-3 py-1.5 text-xs font-semibold text-cyan-700 dark:text-cyan-300">Liên quan: {featureArea}</span>}</div>
               <div className="mt-6"><label htmlFor="feedback-message" className="text-sm font-semibold text-foreground">{prompt.label}</label><textarea id="feedback-message" value={message} onChange={event => setMessage(event.target.value)} maxLength={1200} required minLength={12} rows={7} placeholder={prompt.placeholder} className="mt-3 w-full resize-y rounded-2xl border border-border bg-background/40 px-4 py-3 text-base leading-relaxed text-foreground outline-none transition-colors placeholder:text-foreground/40 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20" aria-describedby="feedback-character-count" /><div id="feedback-character-count" className="mt-2 flex justify-end text-xs text-foreground/55">{message.length}/1200</div></div>
-              <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-border/70 bg-background/25 p-4 text-sm text-foreground/75"><input type="checkbox" checked={allowContact} onChange={event => setAllowContact(event.target.checked)} className="mt-0.5 h-5 w-5 rounded border-border accent-cyan-700" /><span><span className="font-semibold text-foreground">Có thể liên hệ lại với tôi</span><span className="mt-0.5 block text-xs leading-relaxed text-foreground/60">Dùng khi đội ngũ cần hỏi thêm để hiểu góp ý của bạn.</span></span></label>
-              <div className="mt-6 flex items-start gap-2 rounded-xl bg-foreground/[0.045] px-3 py-2.5 text-xs leading-relaxed text-foreground/60"><ShieldCheck size={16} className="mt-0.5 shrink-0 text-cyan-700 dark:text-cyan-300" aria-hidden="true" /><span>Bản xem thử này chưa lưu hay gửi dữ liệu. Khi bạn duyệt form, neuOS sẽ chỉ lưu những thông tin cần thiết để xử lý góp ý.</span></div>
-              <div className="mt-7 flex items-center justify-between gap-3"><button type="button" onClick={() => setStep(2)} className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-foreground/70 transition-colors hover:bg-foreground/8 hover:text-foreground"><ArrowLeft size={17} aria-hidden="true" /> Quay lại</button><button type="submit" disabled={message.trim().length < 12} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-700 px-5 text-sm font-semibold text-white shadow-[0_6px_18px_rgba(14,116,144,0.20)] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-cyan-500/25 dark:text-cyan-100 dark:shadow-none"><Send size={17} aria-hidden="true" /> Hoàn tất xem thử</button></div>
+              <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-border/70 bg-background/25 p-4 text-sm text-foreground/75"><input type="checkbox" checked={allowContact} onChange={event => { setAllowContact(event.target.checked); setSubmitError(''); }} className="mt-0.5 h-5 w-5 rounded border-border accent-cyan-700" /><span><span className="font-semibold text-foreground">Có thể liên hệ lại với tôi</span><span className="mt-0.5 block text-xs leading-relaxed text-foreground/60">Dùng khi đội ngũ cần hỏi thêm để hiểu góp ý của bạn.</span></span></label>
+              {allowContact && <div className="mt-3"><label htmlFor="feedback-contact-email" className="text-sm font-semibold text-foreground">Email để liên hệ</label><input id="feedback-contact-email" type="email" autoComplete="email" required value={contactEmail} onChange={event => { setContactEmail(event.target.value); setSubmitError(''); }} placeholder="email@example.com" className="mt-2 min-h-11 w-full rounded-xl border border-border bg-background/40 px-4 text-base text-foreground outline-none transition-colors placeholder:text-foreground/40 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20" /></div>}
+              <div className="mt-6 flex items-start gap-2 rounded-xl bg-foreground/[0.045] px-3 py-2.5 text-xs leading-relaxed text-foreground/60"><ShieldCheck size={16} className="mt-0.5 shrink-0 text-cyan-700 dark:text-cyan-300" aria-hidden="true" /><span>Bạn có thể góp ý khi chưa đăng nhập. neuOS chỉ lưu nội dung, chủ đề, đánh giá và email nếu bạn chủ động chọn cho phép liên hệ; người dùng khác không thể xem dữ liệu này.</span></div>
+              {submitError && <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-sm text-red-700 dark:text-red-300" role="alert">{submitError}</p>}
+              <div className="mt-7 flex items-center justify-between gap-3"><button type="button" onClick={() => setStep(2)} disabled={isSubmitting} className="inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-foreground/70 transition-colors hover:bg-foreground/8 hover:text-foreground disabled:opacity-50"><ArrowLeft size={17} aria-hidden="true" /> Quay lại</button><button type="submit" disabled={isSubmitting || message.trim().length < 12 || (allowContact && !contactEmail.trim())} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-700 px-5 text-sm font-semibold text-white shadow-[0_6px_18px_rgba(14,116,144,0.20)] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-cyan-500/25 dark:text-cyan-100 dark:shadow-none"><Send size={17} aria-hidden="true" /> {isSubmitting ? 'Đang gửi...' : 'Gửi góp ý'}</button></div>
             </form>}
           </div>
         </div>
-        <div className="flex items-center gap-2 border-t border-border/60 bg-foreground/[0.025] px-5 py-3 text-xs text-foreground/55 sm:px-8"><Sparkles size={14} className="text-cyan-700 dark:text-cyan-300" aria-hidden="true" />Bản thiết kế góp ý — chưa gửi dữ liệu ra ngoài.</div>
+        <div className="flex items-center gap-2 border-t border-border/60 bg-foreground/[0.025] px-5 py-3 text-xs text-foreground/55 sm:px-8"><Sparkles size={14} className="text-cyan-700 dark:text-cyan-300" aria-hidden="true" />Góp ý được lưu riêng tư để đội ngũ neuOS xem và cải thiện sản phẩm.</div>
       </section>
     </div>
   );
