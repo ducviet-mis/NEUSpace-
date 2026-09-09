@@ -85,7 +85,12 @@ export default function AuthPage({ onLogin, onContinueAsGuest }: AuthPageProps) 
 
       onLogin();
     } catch (reason: unknown) {
-      setError(reason instanceof Error ? reason.message : 'Có lỗi xảy ra. Vui lòng thử lại.');
+      const rawMessage = reason instanceof Error ? reason.message : '';
+      if (/email rate limit exceeded/i.test(rawMessage)) {
+        setError('Đăng ký đang tạm bị giới hạn vì Supabase vẫn gửi email xác thực. Quản trị viên cần tắt “Confirm email” trong Authentication → Providers → Email, rồi thử lại sau ít phút.');
+      } else {
+        setError(rawMessage || 'Có lỗi xảy ra. Vui lòng thử lại.');
+      }
     } finally {
       setLoading(false);
     }
