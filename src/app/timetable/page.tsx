@@ -300,7 +300,7 @@ export default function TimetablePage() {
             <CalendarIcon className="text-cyan-400" />
             Thời khóa biểu
           </h1>
-          <p className="opacity-70 mt-1">Lưới thời gian (Time Grid Calendar) chuẩn sinh viên.</p>
+          <p className="opacity-70 mt-1">Lưới thời gian (Time Grid Calendar)</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -565,7 +565,7 @@ export default function TimetablePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1 opacity-80">Ca học (Chuẩn NEU)</label>
+                <label className="block text-sm font-medium mb-1 opacity-80">Ca học</label>
                 <select 
                   value={shift} onChange={handleShiftChange}
                   className="w-full bg-background border border-border rounded-lg p-2.5 outline-none focus:border-brand-cyan"
