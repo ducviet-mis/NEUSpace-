@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { 
   Home, Calendar, Calculator, BookOpen, Settings,
   Menu, X, Bell, User, LogOut, HelpCircle, FileText,
-  Moon, Sun, ShoppingBag, MoreHorizontal
+  Moon, Sun, ShoppingBag, MoreHorizontal, LogIn
 } from 'lucide-react';
 import AuthPage from '@/components/auth/AuthPage';
 import { supabase } from '@/lib/supabase';
@@ -30,8 +30,20 @@ const MOBILE_NAV_ITEMS = [
   { name: 'Lịch học', href: '/timetable', icon: Calendar },
 ];
 
+const GUEST_TOOL_COPY: Record<string, { title: string; description: string }> = {
+  '/gpa': {
+    title: 'Bạn đang dùng thử Tính GPA',
+    description: 'Điểm chỉ được lưu trên thiết bị này. Đăng nhập để dùng đầy đủ các tiện ích neuOS.',
+  },
+  '/double-major': {
+    title: 'Bạn đang dùng thử Kế hoạch Song ngành',
+    description: 'So sánh chương trình đào tạo thoải mái, không cần cung cấp thông tin cá nhân.',
+  },
+};
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const guestTool = GUEST_TOOL_COPY[pathname];
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   
@@ -130,7 +142,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  if (!session) {
+  if (!session && !guestTool) {
     return <AuthPage onLogin={() => {}} />;
   }
 
@@ -229,6 +241,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </button>
                 )}
                 
+                {session && (
                 <div className="relative flex items-center">
                   <button 
                     className="w-11 h-11 text-foreground/70 hover:text-foreground active:bg-foreground/10 rounded-xl transition-colors relative flex items-center justify-center"
@@ -290,11 +303,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </>
                   )}
                 </div>
+                )}
 
-                <div className="h-8 w-px bg-foreground/20 hidden sm:block"></div>
+                {session && <div className="h-8 w-px bg-foreground/20 hidden sm:block"></div>}
                 
                 {/* Avatar */}
-                <div className="relative">
+                {session ? <div className="relative">
                   <button className="w-11 h-11 flex items-center justify-center cursor-pointer hover:opacity-80 active:bg-foreground/10 rounded-xl transition-opacity" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)} aria-label="Mở menu tài khoản" aria-expanded={isUserMenuOpen}>
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="Avatar" className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-glass-border object-cover shadow-lg" />
@@ -329,12 +343,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       </div>
                     </>
                   )}
-                </div>
+                </div> : (
+                  <Link
+                    href="/"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl px-2 sm:px-3 text-sm font-semibold text-cyan-700 transition-colors hover:bg-cyan-500/10 dark:text-cyan-300"
+                    aria-label="Đăng nhập neuOS"
+                  >
+                    <LogIn size={20} aria-hidden="true" />
+                    <span className="hidden sm:inline">Đăng nhập</span>
+                  </Link>
+                )}
               </div>
             </header>
 
             {/* Scrollable Content */}
             <main className="w-full touch-pan-y p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] md:flex-1 md:min-h-0 md:overflow-y-auto md:p-7 lg:p-8 xl:px-10 scroll-smooth no-scrollbar">
+              {guestTool && !session && (
+                <section role="status" className="mx-auto mb-4 flex max-w-6xl flex-col gap-3 rounded-2xl border border-cyan-500/25 bg-cyan-500/8 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{guestTool.title}</p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/70">{guestTool.description}</p>
+                  </div>
+                  <Link href="/" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-cyan-800 px-4 py-2 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(14,116,144,0.20)] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] dark:bg-cyan-500/25 dark:text-cyan-100 dark:shadow-none">
+                    <LogIn size={17} aria-hidden="true" />
+                    Đăng nhập để trải nghiệm đầy đủ
+                  </Link>
+                </section>
+              )}
               {children}
             </main>
         </div>
