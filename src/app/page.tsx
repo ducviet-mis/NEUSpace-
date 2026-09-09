@@ -12,16 +12,23 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 interface GradeRecord {
   subject_code: string;
   credits: number;
-  score_cc: number;
-  score_gk: number;
-  score_ck: number;
-  score_10: number;
+  score_cc: number | null;
+  score_gk: number | null;
+  score_ck: number | null;
+  score_10: number | null;
+}
+
+interface CurriculumProgress {
+  totalCredits: number;
+  totalSubjects: number;
+  subjectCredits: Record<string, number>;
 }
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [grades, setGrades] = useState<GradeRecord[]>([]);
+  const [curriculumProgress, setCurriculumProgress] = useState<CurriculumProgress | null>(null);
   
   // Timetable & Calendar state
   const [allEvents, setAllEvents] = useState<any[]>([]);
@@ -53,6 +60,15 @@ export default function Home() {
       }
       setProfile(profileData);
 
+      if (profileData.major_name) {
+        const curriculumResponse = await fetch(
+          `/api/curriculum-progress?major=${encodeURIComponent(profileData.major_name)}`,
+        );
+        if (curriculumResponse.ok) {
+          setCurriculumProgress(await curriculumResponse.json());
+        }
+      }
+
       const { data: gradesData } = await supabase.from('grades').select('*').eq('user_id', userId);
       if (gradesData) setGrades(gradesData as any);
 
@@ -80,18 +96,40 @@ export default function Home() {
     fetchDashboardData();
   }, []);
 
+  const completedGrades = useMemo(() => {
+    const completedBySubject = new Map<string, GradeRecord>();
+
+    grades.forEach(grade => {
+      if (grade.score_10 === null || grade.score_10 === undefined) return;
+
+      const curriculumCredits = curriculumProgress?.subjectCredits[grade.subject_code];
+      if (curriculumProgress && curriculumCredits === undefined) return;
+
+      completedBySubject.set(grade.subject_code, {
+        ...grade,
+        credits: curriculumCredits ?? grade.credits ?? 0,
+      });
+    });
+
+    return Array.from(completedBySubject.values());
+  }, [grades, curriculumProgress]);
+
   const overallStats = useMemo(() => {
-    const validGrades = grades
-      .filter(g => g.score_10 !== null && g.score_10 !== undefined)
-      .map(g => ({ credits: g.credits || 3, score10: Number(g.score_10) }));
+    const validGrades = completedGrades.map(grade => ({
+      credits: grade.credits,
+      score10: Number(grade.score_10),
+    }));
     return calculateGPA(validGrades);
-  }, [grades]);
+  }, [completedGrades]);
+
+  const completedCourseCount = completedGrades.length;
+  const requiredCourseCount = curriculumProgress?.totalSubjects ?? 45;
 
   const graduationProgress = useMemo(() => {
-    let required = 130;
+    const required = curriculumProgress?.totalCredits ?? 130;
     const percent = Math.min((overallStats.totalCredits / required) * 100, 100);
     return { current: overallStats.totalCredits, required, percent };
-  }, [overallStats]);
+  }, [curriculumProgress, overallStats]);
 
   // Derived active weekdays (2-8) for classes
   const activeWeekdays = useMemo(() => {
@@ -231,7 +269,7 @@ export default function Home() {
           {[
             { label: 'GPA Hệ 4', value: overallStats.gpa4.toFixed(2), unit: '/4.00', icon: Award, color: 'text-cyan-400', isGpa: true },
             { label: 'GPA Hệ 10', value: overallStats.gpa10.toFixed(2), unit: '/10.0', icon: Calculator, color: 'text-blue-400', isGpa: true },
-            { label: 'Tín chỉ', value: overallStats.totalCredits, unit: '/130 TC', icon: BookOpen, color: 'text-purple-400', isGpa: false },
+            { label: 'Tín chỉ', value: overallStats.totalCredits, unit: `/${graduationProgress.required} TC`, icon: BookOpen, color: 'text-purple-400', isGpa: false },
             { label: 'Hoạt động hôm nay', value: todaysClassesCount, unit: 'Ca học', icon: Clock, color: 'text-red-400', isGpa: false },
           ].map((stat, idx) => (
             <div key={idx} className="glass-card p-4 sm:p-5 flex flex-col justify-center relative overflow-hidden group">
@@ -292,8 +330,8 @@ export default function Home() {
                 <PieChart>
                   <Pie
                     data={[
-                      { name: 'Đã học', value: grades.length || 0 },
-                      { name: 'Còn lại', value: Math.max(0, 45 - (grades.length || 0)) },
+                      { name: 'Đã học', value: completedCourseCount },
+                      { name: 'Còn lại', value: Math.max(0, requiredCourseCount - completedCourseCount) },
                     ]}
                     cx="50%"
                     cy="50%"
@@ -312,8 +350,8 @@ export default function Home() {
               </ResponsiveContainer>
               {/* Center Label */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-3xl font-black text-foreground leading-none">{grades.length}</span>
-                <span className="text-[10px] text-foreground/50 font-medium mt-1">/ ~45 môn</span>
+                <span className="text-3xl font-black text-foreground leading-none">{completedCourseCount}</span>
+                <span className="text-[10px] text-foreground/50 font-medium mt-1">/ ~{requiredCourseCount} môn</span>
               </div>
             </div>
 
@@ -322,14 +360,14 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.5)]"></div>
                 <div>
-                  <div className="text-xs font-semibold text-foreground">{grades.length} môn</div>
+                  <div className="text-xs font-semibold text-foreground">{completedCourseCount} môn</div>
                   <div className="text-[10px] text-foreground/50">Đã có điểm</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-foreground/15"></div>
                 <div>
-                  <div className="text-xs font-semibold text-foreground">{Math.max(0, 45 - grades.length)} môn</div>
+                  <div className="text-xs font-semibold text-foreground">{Math.max(0, requiredCourseCount - completedCourseCount)} môn</div>
                   <div className="text-[10px] text-foreground/50">Còn lại</div>
                 </div>
               </div>
