@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { 
   Home, Calendar, Calculator, BookOpen, Settings,
   Menu, X, Bell, User, LogOut, HelpCircle, FileText,
-  Moon, Sun, ShoppingBag, MoreHorizontal, LogIn
+  Moon, Sun, ShoppingBag, MoreHorizontal, LogIn, MessageSquare
 } from 'lucide-react';
 import AuthPage from '@/components/auth/AuthPage';
 import { supabase } from '@/lib/supabase';
@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { name: 'Lịch thi', href: '/exams', icon: FileText },
   { name: 'Chợ Giáo Trình', href: '/market', icon: ShoppingBag },
   { name: 'Song ngành', href: '/double-major', icon: BookOpen },
+  { name: 'Góp ý', href: '/feedback', icon: MessageSquare },
 ];
 
 const MOBILE_NAV_ITEMS = [
@@ -38,6 +39,10 @@ const GUEST_TOOL_COPY: Record<string, { title: string; description: string }> = 
   '/double-major': {
     title: 'Bạn đang dùng thử Kế hoạch Song ngành',
     description: 'So sánh chương trình đào tạo thoải mái, không cần cung cấp thông tin cá nhân.',
+  },
+  '/feedback': {
+    title: 'Bạn đang xem bản thiết kế Góp ý',
+    description: 'Bạn có thể trải nghiệm form; dữ liệu sẽ chỉ được lưu khi tính năng chính thức được mở.',
   },
 };
 
@@ -240,9 +245,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
               <div className="flex items-center gap-1 md:gap-6">
                 
-                <button className="text-foreground/70 hover:text-foreground transition-colors hidden sm:block">
-                  <HelpCircle size={22} />
-                </button>
+                <Link href="/feedback" className="hidden h-11 w-11 items-center justify-center rounded-xl text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground sm:flex" aria-label="Góp ý cho neuOS" title="Góp ý cho neuOS">
+                  <HelpCircle size={22} aria-hidden="true" />
+                </Link>
 
                 {/* Theme Toggle Button - Minimalist Effect */}
                 {mounted && (
