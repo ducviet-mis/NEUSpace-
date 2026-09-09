@@ -30,6 +30,11 @@ export default function Home() {
   const [calendarMonth, setCalendarMonth] = useState<Date>(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [showGpa, setShowGpa] = useState(false);
 
+  const greetingName =
+    typeof profile?.full_name === 'string' && profile.full_name.trim()
+      ? profile.full_name.trim()
+      : 'Neuer';
+
   const fetchDashboardData = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -38,7 +43,13 @@ export default function Home() {
 
       let { data: profileData } = await supabase.from('profiles').select('*').eq('user_id', userId).single();
       if (!profileData) {
-        profileData = { full_name: session.user.email?.split('@')[0] || 'Sinh viên' };
+        profileData = {
+          full_name:
+            session.user.user_metadata?.full_name ||
+            session.user.user_metadata?.username ||
+            session.user.email?.split('@')[0] ||
+            'Neuer',
+        };
       }
       setProfile(profileData);
 
@@ -201,7 +212,7 @@ export default function Home() {
           <div className="absolute right-4 top-4 text-foreground/30 text-3xl font-serif pointer-events-none">✦</div>
           
           <h3 className="text-xl md:text-2xl font-semibold mb-1 text-foreground drop-shadow-md tracking-wide">
-            Xin chào, <span className="text-foreground">Neuer</span> 👋
+            Xin chào, <span className="text-foreground">{greetingName}</span> 👋
           </h3>
           <p className="text-sm leading-relaxed text-foreground/65">
             Chúc bạn một ngày tốt lành!
