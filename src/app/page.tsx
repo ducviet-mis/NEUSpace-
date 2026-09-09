@@ -201,9 +201,12 @@ export default function Home() {
           <div className="absolute right-4 top-4 text-foreground/30 text-3xl font-serif pointer-events-none">✦</div>
           
           <h3 className="text-xl md:text-2xl font-semibold mb-1 text-foreground drop-shadow-md tracking-wide">
-            Xin chào, <span className="text-foreground">{profile?.full_name?.split(' ').pop() || 'Sinh viên'}</span> 👋
+            Xin chào, <span className="text-foreground">Neuer</span> 👋
           </h3>
-          <p className="text-sm text-cyan-600 dark:text-cyan-300 mb-5 font-medium hover:underline cursor-pointer">
+          <p className="text-sm leading-relaxed text-foreground/65">
+            Chúc bạn một ngày tốt lành!
+          </p>
+          <p className="mt-1 mb-5 text-sm font-medium text-cyan-600 hover:underline cursor-pointer dark:text-cyan-300">
             {profile?.major_name || 'Chưa cập nhật chuyên ngành'}
           </p>
           <div>
