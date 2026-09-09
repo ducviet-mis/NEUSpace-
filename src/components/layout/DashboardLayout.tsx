@@ -41,8 +41,8 @@ const GUEST_TOOL_COPY: Record<string, { title: string; description: string }> = 
     description: 'So sánh chương trình đào tạo thoải mái, không cần cung cấp thông tin cá nhân.',
   },
   '/feedback': {
-    title: 'Bạn đang xem bản thiết kế Góp ý',
-    description: 'Bạn có thể trải nghiệm form; dữ liệu sẽ chỉ được lưu khi tính năng chính thức được mở.',
+    title: 'Góp ý giúp neuOS tốt hơn',
+    description: 'Bạn có thể gửi góp ý ngay cả khi chưa đăng nhập. Không cần cung cấp thông tin cá nhân.',
   },
 };
 

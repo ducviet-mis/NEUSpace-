@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Settings, User, Mail, Lock, Shield, Loader2, LogOut, CheckCircle, AlertCircle, Camera, X } from 'lucide-react';
+import { Settings, User, AtSign, Lock, Shield, Loader2, LogOut, CheckCircle, AlertCircle, Camera, X } from 'lucide-react';
 import curriculumData from '@/data/curriculum.json';
 import { createUserScopedImagePath, validateImageFile } from '@/lib/uploadValidation';
 
@@ -13,7 +13,8 @@ export default function SettingsPage() {
 
   // Profile data
   const [userId, setUserId] = useState<string>('');
-  const [email, setEmail] = useState('');
+  const [authEmail, setAuthEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
   const [dob, setDob] = useState('');
   const [cohort, setCohort] = useState('');
@@ -38,7 +39,7 @@ export default function SettingsPage() {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
         setUserId(session.user.id);
-        setEmail(session.user.email || '');
+        setAuthEmail(session.user.email || '');
 
         const { data: profile } = await supabase.from('profiles').select('*').eq('user_id', session.user.id).single();
         if (profile) {
@@ -47,6 +48,7 @@ export default function SettingsPage() {
           setCohort(profile.cohort || '');
           setMajorName(profile.major_name || '');
           setAvatarUrl(profile.avatar_url || '');
+          setUsername(profile.username || session.user.user_metadata?.username || '');
         }
       } catch (err) {
         console.error(err);
@@ -141,7 +143,7 @@ export default function SettingsPage() {
     try {
       // 1. Verify current password
       const { error: verifyError } = await supabase.auth.signInWithPassword({
-        email: email,
+        email: authEmail,
         password: currentPassword
       });
 
@@ -183,7 +185,7 @@ export default function SettingsPage() {
     return <div className="flex h-[50vh] items-center justify-center"><Loader2 className="animate-spin text-brand-cyan w-8 h-8" /></div>;
   }
 
-  const generatedAvatar = avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || email || 'Student')}&background=0D9488&color=fff&size=128`;
+  const generatedAvatar = avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || username || 'Student')}&background=0D9488&color=fff&size=128`;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-12 animate-in fade-in duration-500">
@@ -328,17 +330,16 @@ export default function SettingsPage() {
             </div>
           </form>
 
-          {/* Email is intentionally read-only to preserve the student-email policy. */}
           <section className="glass-panel p-6">
             <h3 className="font-bold flex items-center gap-2 mb-6 border-b border-border/50 pb-3">
-              <Mail size={18} className="text-brand-violet" />
-              Email liên kết
+              <AtSign size={18} className="text-brand-violet" />
+              Tên đăng nhập
             </h3>
             
             <div className="rounded-xl border border-brand-violet/20 bg-brand-violet/5 p-4">
-              <p className="text-sm font-medium break-all">{email || 'Đang tải email...'}</p>
+              <p className="text-sm font-medium break-all">{username || 'Tài khoản cũ chưa có tên đăng nhập'}</p>
               <p className="mt-2 text-xs leading-relaxed opacity-70">
-                Email đăng nhập được giữ cố định để bảo vệ tài khoản và duy trì điều kiện sử dụng email sinh viên.
+                Tên đăng nhập được giữ cố định để bảo vệ tài khoản. neuOS không hiển thị email kỹ thuật dùng cho xác thực.
               </p>
             </div>
           </section>
