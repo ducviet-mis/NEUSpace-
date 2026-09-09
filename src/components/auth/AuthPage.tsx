@@ -9,7 +9,7 @@ interface AuthPageProps {
   onContinueAsGuest?: () => void;
 }
 
-const INTERNAL_EMAIL_DOMAIN = 'accounts.neuos.invalid';
+const INTERNAL_EMAIL_DOMAIN = 'accounts.neuos.tech';
 const USERNAME_PATTERN = /^[a-z0-9][a-z0-9._-]{2,23}$/;
 
 function usernameToInternalEmail(username: string) {
@@ -128,10 +128,8 @@ export default function AuthPage({ onLogin, onContinueAsGuest }: AuthPageProps) 
 
           <div>
             <label htmlFor="auth-username" className="mb-1 block text-sm font-medium opacity-80">Tên đăng nhập</label>
-            <input id="auth-username" type="text" required autoComplete="username" minLength={3} maxLength={24} value={username} onChange={event => setUsername(event.target.value)} className="w-full rounded-xl border border-border bg-background/50 p-3 outline-none transition-colors focus:border-cyan-500/50" placeholder="VD: neuer_2004" aria-describedby={isLogin ? 'auth-login-help' : 'auth-username-help'} />
-            <p id={isLogin ? 'auth-login-help' : 'auth-username-help'} className="mt-1.5 text-xs leading-relaxed text-foreground/60">
-              {isLogin ? 'Tài khoản cũ vẫn có thể đăng nhập bằng email đã dùng trước đây.' : '3–24 ký tự: chữ thường, số, dấu chấm, gạch dưới hoặc gạch ngang.'}
-            </p>
+            <input id="auth-username" type="text" required autoComplete="username" minLength={3} maxLength={24} value={username} onChange={event => setUsername(event.target.value)} className="w-full rounded-xl border border-border bg-background/50 p-3 outline-none transition-colors focus:border-cyan-500/50" placeholder="VD: neuer_2004" aria-describedby={!isLogin ? 'auth-username-help' : undefined} />
+            {!isLogin && <p id="auth-username-help" className="mt-1.5 text-xs leading-relaxed text-foreground/60">3–24 ký tự: chữ thường, số, dấu chấm, gạch dưới hoặc gạch ngang.</p>}
           </div>
 
           <div>

@@ -77,7 +77,7 @@ begin
     ));
   end if;
 
-  if supplied_email <> supplied_username || '@accounts.neuos.invalid' then
+  if supplied_email <> supplied_username || '@accounts.neuos.tech' then
     return jsonb_build_object('error', jsonb_build_object(
       'http_code', 400,
       'message', 'Chỉ đăng ký qua tên đăng nhập trên neuOS.'
