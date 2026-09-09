@@ -102,9 +102,7 @@ export default function SellPage() {
 
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/settings'); // Redirect to login basically, since DashboardLayout handles it, this might just wait
-      } else {
+      if (session) {
         setUser(session.user);
       }
     };

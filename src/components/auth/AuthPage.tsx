@@ -2,9 +2,14 @@
 
 import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
-export default function AuthPage({ onLogin }: { onLogin: () => void }) {
+interface AuthPageProps {
+  onLogin: () => void;
+  onContinueAsGuest?: () => void;
+}
+
+export default function AuthPage({ onLogin, onContinueAsGuest }: AuthPageProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,7 +54,7 @@ export default function AuthPage({ onLogin }: { onLogin: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#020817] flex items-center justify-center p-4 relative overflow-hidden text-foreground">
+    <div className="min-h-dvh bg-background flex items-center justify-center p-4 relative overflow-hidden text-foreground">
       {/* Background Gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-500/20 rounded-full blur-[120px] pointer-events-none" />
@@ -72,13 +77,13 @@ export default function AuthPage({ onLogin }: { onLogin: () => void }) {
         </div>
 
         {error && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-sm mb-4">
+          <div role="alert" className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-400 text-sm mb-4">
             {error}
           </div>
         )}
 
         {message && (
-          <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-500 text-sm mb-4">
+          <div role="status" className="p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-700 dark:text-green-400 text-sm mb-4">
             {message}
           </div>
         )}
@@ -146,6 +151,17 @@ export default function AuthPage({ onLogin }: { onLogin: () => void }) {
             <p>Đã có tài khoản? <button type="button" onClick={() => setIsLogin(true)} className="text-cyan-600 dark:text-cyan-400 hover:underline font-medium">Quay lại đăng nhập</button></p>
           )}
         </div>
+
+        {onContinueAsGuest && (
+          <button
+            type="button"
+            onClick={onContinueAsGuest}
+            className="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-foreground/15 bg-foreground/[0.04] px-4 py-2.5 text-sm font-semibold text-foreground/80 transition-[background-color,color,transform] hover:bg-foreground/[0.08] hover:text-foreground active:scale-[0.99]"
+          >
+            <ArrowLeft size={18} aria-hidden="true" />
+            Tiếp tục xem không cần đăng nhập
+          </button>
+        )}
       </div>
     </div>
   );

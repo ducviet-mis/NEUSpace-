@@ -53,6 +53,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
 
   // Notifications State
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -88,6 +89,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) {
+        setShowAuth(false);
         fetchProfile(session.user.id);
         fetchNotifications(session.user.id);
       } else {
@@ -142,9 +144,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  if (!session && !guestTool) {
-    return <AuthPage onLogin={() => {}} />;
+  if (!session && showAuth) {
+    return (
+      <AuthPage
+        onLogin={() => setShowAuth(false)}
+        onContinueAsGuest={() => setShowAuth(false)}
+      />
+    );
   }
+
+  const isGuestPreview = !session && !guestTool;
+  const guestNotice = guestTool ?? {
+    title: pathname === '/' ? 'Bạn đang xem neuOS ở chế độ khách' : 'Đăng nhập để sử dụng tính năng này',
+    description: pathname === '/'
+      ? 'Bạn có thể xem toàn bộ neuOS. Tính GPA và Song ngành dùng được ngay; các tiện ích cần lưu dữ liệu sẽ mở sau khi đăng nhập.'
+      : 'Đây là bản xem trước. Đăng nhập để nhập, lưu và quản lý dữ liệu cá nhân của bạn.',
+  };
 
   const asideWidth = isDesktopExpanded ? 'w-64' : 'w-64 md:w-20';
   const textVisibilityClass = isDesktopExpanded 
@@ -344,33 +359,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </>
                   )}
                 </div> : (
-                  <Link
-                    href="/"
+                  <button
+                    type="button"
+                    onClick={() => setShowAuth(true)}
                     className="inline-flex h-11 items-center gap-2 rounded-xl px-2 sm:px-3 text-sm font-semibold text-cyan-700 transition-colors hover:bg-cyan-500/10 dark:text-cyan-300"
                     aria-label="Đăng nhập neuOS"
                   >
                     <LogIn size={20} aria-hidden="true" />
                     <span className="hidden sm:inline">Đăng nhập</span>
-                  </Link>
+                  </button>
                 )}
               </div>
             </header>
 
             {/* Scrollable Content */}
             <main className="w-full touch-pan-y p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(7rem+env(safe-area-inset-bottom))] md:flex-1 md:min-h-0 md:overflow-y-auto md:p-7 lg:p-8 xl:px-10 scroll-smooth no-scrollbar">
-              {guestTool && !session && (
+              {!session && (
                 <section role="status" className="mx-auto mb-4 flex max-w-6xl flex-col gap-3 rounded-2xl border border-cyan-500/25 bg-cyan-500/8 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{guestTool.title}</p>
-                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/70">{guestTool.description}</p>
+                    <p className="text-sm font-semibold text-foreground">{guestNotice.title}</p>
+                    <p className="mt-0.5 max-w-3xl text-xs leading-relaxed text-foreground/70">{guestNotice.description}</p>
                   </div>
-                  <Link href="/" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-cyan-800 px-4 py-2 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(14,116,144,0.20)] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] dark:bg-cyan-500/25 dark:text-cyan-100 dark:shadow-none">
+                  <button type="button" onClick={() => setShowAuth(true)} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-cyan-800 px-4 py-2 text-sm font-semibold text-white shadow-[0_4px_12px_rgba(14,116,144,0.20)] transition-[filter,transform] hover:brightness-110 active:scale-[0.98] dark:bg-cyan-500/25 dark:text-cyan-100 dark:shadow-none">
                     <LogIn size={17} aria-hidden="true" />
-                    Đăng nhập để trải nghiệm đầy đủ
-                  </Link>
+                    {guestTool ? 'Đăng nhập để trải nghiệm đầy đủ' : 'Đăng nhập để sử dụng'}
+                  </button>
                 </section>
               )}
-              {children}
+              <div
+                inert={isGuestPreview ? true : undefined}
+                aria-label={isGuestPreview ? 'Nội dung xem trước, cần đăng nhập để tương tác' : undefined}
+                className={isGuestPreview ? 'pointer-events-none cursor-not-allowed select-none opacity-[0.78]' : undefined}
+              >
+                {children}
+              </div>
             </main>
         </div>
       </div>
