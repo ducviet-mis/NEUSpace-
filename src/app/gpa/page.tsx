@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Calculator, Plus, Trash2, Award, Info, BarChart2 } from 'lucide-react';
+import { Calculator, Plus, Trash2, Award, Info, BarChart2, BookOpen } from 'lucide-react';
 import { calculateGPA, convertScore, roundNeuFinalScore, roundNeuTestScore } from '@/utils/neuLogic';
 import {
-  LineChart, Line, BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
+import type { TooltipContentProps } from 'recharts';
 
 interface ScoreEntry {
   id: string;
@@ -17,18 +17,32 @@ interface ScoreEntry {
   score50: string; // Điểm cuối kỳ (50%)
 }
 
+type ChartMetric = 'gpa10' | 'gpa4';
+
+type ScoreChartCourse = {
+  fullName: string;
+  letter: string;
+  gpa10: number;
+  gpa4: number;
+};
+
 export default function GPACalculatorPage() {
   const [entries, setEntries] = useState<ScoreEntry[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [chartMetric, setChartMetric] = useState<ChartMetric>('gpa10');
 
   React.useEffect(() => {
-    const saved = localStorage.getItem('gpa_entries');
-    if (saved) {
-      try {
-        setEntries(JSON.parse(saved));
-      } catch(e) {}
-    }
-    setIsLoaded(true);
+    const frame = window.requestAnimationFrame(() => {
+      const saved = localStorage.getItem('gpa_entries');
+      if (saved) {
+        try {
+          setEntries(JSON.parse(saved));
+        } catch {}
+      }
+      setIsLoaded(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   React.useEffect(() => {
@@ -86,21 +100,55 @@ export default function GPACalculatorPage() {
     return calculateGPA(validCourses);
   }, [entries]);
 
-  // Tạo dữ liệu cho chart từ các môn học đã nhập
+  // Chỉ đưa các môn đã có đủ điểm vào phần thống kê.
   const chartData = useMemo(() => {
-    return entries.map(e => {
+    return entries.flatMap(e => {
       const finalScore = calculateSubjectFinal(e);
-      const converted = finalScore !== null ? convertScore(finalScore) : null;
-      // Lấy tên viết tắt nếu tên môn quá dài để hiển thị biểu đồ đẹp hơn
-      const shortName = e.name.length > 15 ? e.name.substring(0, 15) + '...' : (e.name || 'Môn học');
-      return {
+      if (finalScore === null) return [];
+
+      const converted = convertScore(finalScore);
+      const fullName = e.name.trim() || 'Môn học chưa đặt tên';
+      const shortName = fullName.length > 18 ? `${fullName.substring(0, 18)}…` : fullName;
+      return [{
         name: shortName,
-        fullName: e.name || 'Môn học chưa đặt tên',
-        gpa10: finalScore !== null ? Number(finalScore.toFixed(2)) : 0,
-        gpa4: converted !== null ? converted.score4 : 0
-      };
-    }).filter(e => e.gpa10 > 0 || e.gpa4 > 0);
+        fullName,
+        letter: converted.letter,
+        gpa10: Number(finalScore.toFixed(2)),
+        gpa4: converted.score4,
+      }];
+    });
   }, [entries]);
+
+  const bestCourse = useMemo(
+    () => chartData.reduce<typeof chartData[number] | null>((best, course) => !best || course.gpa10 > best.gpa10 ? course : best, null),
+    [chartData]
+  );
+
+  const scoreDistribution = useMemo(() => [
+    { label: 'Xuất sắc', range: '≥ 8.5', count: chartData.filter(course => course.gpa10 >= 8.5).length, tone: 'text-emerald-600 dark:text-emerald-400' },
+    { label: 'Khá / Giỏi', range: '7.0–8.4', count: chartData.filter(course => course.gpa10 >= 7 && course.gpa10 < 8.5).length, tone: 'text-cyan-700 dark:text-cyan-300' },
+    { label: 'Đạt', range: '5.5–6.9', count: chartData.filter(course => course.gpa10 >= 5.5 && course.gpa10 < 7).length, tone: 'text-amber-700 dark:text-amber-300' },
+    { label: 'Cần cải thiện', range: '< 5.5', count: chartData.filter(course => course.gpa10 < 5.5).length, tone: 'text-rose-700 dark:text-rose-300' },
+  ], [chartData]);
+
+  const chartConfig = chartMetric === 'gpa10'
+    ? { key: 'gpa10' as const, label: 'Điểm hệ 10', domain: [0, 10] as [number, number], color: '#06b6d4', unit: '/10' }
+    : { key: 'gpa4' as const, label: 'Điểm hệ 4', domain: [0, 4] as [number, number], color: '#8b5cf6', unit: '/4' };
+
+  const renderScoreTooltip = ({ active, payload }: TooltipContentProps) => {
+    if (!active || !payload?.length) return null;
+    const course = payload[0].payload as ScoreChartCourse | undefined;
+    if (!course) return null;
+    return (
+      <div className="rounded-xl border border-border bg-background/95 px-3 py-2.5 shadow-xl backdrop-blur">
+        <p className="max-w-52 text-xs font-semibold text-foreground">{course.fullName}</p>
+        <p className="mt-1 text-sm font-bold text-foreground">
+          {course[chartConfig.key].toFixed(chartMetric === 'gpa10' ? 1 : 2)}{chartConfig.unit}
+          <span className="ml-2 text-xs font-semibold text-foreground/60">{course.letter}</span>
+        </p>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-8">
@@ -260,72 +308,106 @@ export default function GPACalculatorPage() {
 
       {/* THỐNG KÊ GPA KHU VỰC DƯỚI */}
       <div className="glass-panel p-6">
-        <h3 className="font-semibold text-xl mb-6 flex items-center gap-2">
-          <BarChart2 className="text-brand-violet" />
-          Thống kê & Biểu đồ GPA
-        </h3>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Line Chart */}
-          <div className="h-72 flex flex-col">
-            <h4 className="text-sm font-medium opacity-70 mb-4 text-center">Điểm Hệ 4 các môn (Biểu đồ đường)</h4>
-            <div className="flex-1 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="name" stroke="currentColor" opacity={0.5} fontSize={12} />
-                  <YAxis stroke="currentColor" opacity={0.5} fontSize={12} domain={[0, 4]} />
-                  <Tooltip 
-                    labelFormatter={(value, payload) => payload?.[0]?.payload?.fullName || value}
-                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                    itemStyle={{ color: '#06B6D4' }}
-                  />
-                  <Line type="monotone" dataKey="gpa4" stroke="#06B6D4" strokeWidth={3} dot={{ r: 4, fill: '#06B6D4' }} activeDot={{ r: 6 }} name="GPA Hệ 4" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="flex items-center gap-2 text-xl font-semibold">
+              <BarChart2 className="text-brand-violet" aria-hidden="true" />
+              Thống kê kết quả
+            </h3>
+            <p className="mt-1 text-sm text-foreground/65">Chỉ hiển thị biểu đồ khi đã có đủ dữ liệu để so sánh.</p>
           </div>
 
-          {/* Bar Chart */}
-          <div className="h-72 flex flex-col">
-            <h4 className="text-sm font-medium opacity-70 mb-4 text-center">Điểm Hệ 10 các môn (Biểu đồ cột)</h4>
-            <div className="flex-1 w-full">
+          {chartData.length >= 2 && (
+            <div className="inline-flex min-h-11 w-full rounded-xl border border-border/70 bg-background/45 p-1 sm:w-auto" aria-label="Chọn thang điểm biểu đồ">
+              {(['gpa10', 'gpa4'] as ChartMetric[]).map(metric => {
+                const isSelected = chartMetric === metric;
+                return (
+                  <button
+                    key={metric}
+                    type="button"
+                    onClick={() => setChartMetric(metric)}
+                    aria-pressed={isSelected}
+                    className={`min-h-9 flex-1 rounded-lg px-3 text-xs font-semibold transition-[background-color,color,box-shadow] sm:flex-none ${isSelected ? 'bg-cyan-700 text-white shadow-sm dark:bg-cyan-500/25 dark:text-cyan-100' : 'text-foreground/60 hover:bg-foreground/8 hover:text-foreground'}`}
+                  >
+                    {metric === 'gpa10' ? 'Hệ 10' : 'Hệ 4'}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {chartData.length === 0 ? (
+          <div className="flex min-h-52 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-background/35 px-5 text-center">
+            <BookOpen size={30} className="mb-3 text-brand-cyan" aria-hidden="true" />
+            <h4 className="font-semibold text-foreground">Chưa có điểm tổng kết</h4>
+            <p className="mt-1 max-w-md text-sm leading-relaxed text-foreground/65">Nhập đủ điểm chuyên cần, giữa kỳ và cuối kỳ của một môn để xem kết quả học tập tại đây.</p>
+          </div>
+        ) : chartData.length === 1 ? (
+          <div className="grid gap-4 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/[0.09] to-blue-500/[0.05] p-5 sm:grid-cols-[1fr_auto] sm:items-center">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-cyan-700 dark:text-cyan-300">Môn đầu tiên</p>
+              <h4 className="mt-2 truncate text-lg font-semibold text-foreground">{chartData[0].fullName}</h4>
+              <p className="mt-1 text-sm text-foreground/65">Nhập thêm một môn để bắt đầu so sánh kết quả theo biểu đồ.</p>
+            </div>
+            <div className="flex items-end gap-2 sm:text-right">
+              <span className="text-4xl font-bold tabular-nums text-cyan-700 dark:text-cyan-300">{chartData[0].gpa10.toFixed(1)}</span>
+              <span className="mb-1 text-sm font-medium text-foreground/60">/10 · {chartData[0].letter}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-border/70 bg-background/25 p-3 sm:p-5">
+            <div className="mb-3 flex items-baseline justify-between gap-3 px-1">
+              <h4 className="text-sm font-semibold text-foreground">So sánh điểm tổng kết theo môn</h4>
+              <span className="text-xs font-medium text-foreground/55">{chartConfig.label}</span>
+            </div>
+            <div className="h-[260px] w-full sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-                  <XAxis dataKey="name" stroke="currentColor" opacity={0.5} fontSize={12} />
-                  <YAxis stroke="currentColor" opacity={0.5} fontSize={12} domain={[0, 10]} />
-                  <Tooltip 
-                    labelFormatter={(value, payload) => payload?.[0]?.payload?.fullName || value}
-                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                    itemStyle={{ color: '#8B5CF6' }}
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                  />
-                  <Bar dataKey="gpa10" fill="#8B5CF6" radius={[4, 4, 0, 0]} name="GPA Hệ 10" />
+                <BarChart data={chartData} margin={{ top: 18, right: 4, left: -16, bottom: 4 }} barCategoryGap="28%">
+                  <CartesianGrid strokeDasharray="3 5" stroke="rgba(100,116,139,0.28)" vertical={false} />
+                  <XAxis dataKey="name" stroke="currentColor" opacity={0.62} fontSize={11} tickLine={false} axisLine={false} interval={0} />
+                  <YAxis stroke="currentColor" opacity={0.62} fontSize={11} tickLine={false} axisLine={false} domain={chartConfig.domain} allowDecimals={chartMetric === 'gpa4'} />
+                  <Tooltip content={renderScoreTooltip} cursor={{ fill: 'rgba(6,182,212,0.08)' }} />
+                  <Bar dataKey={chartConfig.key} fill={chartConfig.color} radius={[8, 8, 2, 2]} maxBarSize={52} isAnimationActive={false} name={chartConfig.label} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
+        )}
 
-          {/* Radar Chart */}
-          <div className="h-72 flex flex-col">
-            <h4 className="text-sm font-medium opacity-70 mb-4 text-center">Phổ điểm Hệ 4 (Biểu đồ mạng nhện)</h4>
-            <div className="flex-1 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
-                  <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                  <PolarAngleAxis dataKey="name" stroke="currentColor" opacity={0.7} fontSize={10} />
-                  <PolarRadiusAxis angle={30} domain={[0, 4]} opacity={0.5} tick={false} axisLine={false} />
-                  <Radar name="GPA Hệ 4" dataKey="gpa4" stroke="#1D4ED8" fill="#3B82F6" fillOpacity={0.4} />
-                  <Tooltip 
-                    labelFormatter={(value, payload) => payload?.[0]?.payload?.fullName || value}
-                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }} 
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+        {chartData.length >= 2 && (
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-border/60 bg-background/35 p-4">
+              <p className="text-xs font-medium text-foreground/60">Môn đã hoàn thành</p>
+              <p className="mt-1 text-2xl font-bold tabular-nums text-foreground">{chartData.length}</p>
+            </div>
+            <div className="rounded-xl border border-border/60 bg-background/35 p-4 sm:col-span-2">
+              <p className="text-xs font-medium text-foreground/60">Điểm cao nhất hiện tại</p>
+              <div className="mt-1 flex items-baseline gap-2">
+                <p className="text-2xl font-bold tabular-nums text-foreground">{bestCourse?.gpa10.toFixed(1)}<span className="ml-1 text-sm font-medium text-foreground/55">/10</span></p>
+                <p className="min-w-0 truncate text-sm text-foreground/65">{bestCourse?.fullName}</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {chartData.length >= 3 && (
+          <div className="mt-5 border-t border-border/60 pt-5">
+            <div className="mb-3 flex items-baseline justify-between gap-3">
+              <h4 className="text-sm font-semibold text-foreground">Phân bố kết quả</h4>
+              <span className="text-xs text-foreground/55">Theo điểm hệ 10</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {scoreDistribution.map(group => (
+                <div key={group.label} className="rounded-xl border border-border/60 bg-background/35 p-3">
+                  <p className={`text-sm font-semibold ${group.tone}`}>{group.label}</p>
+                  <p className="mt-1 text-xs text-foreground/55">{group.range}</p>
+                  <p className="mt-2 text-xl font-bold tabular-nums text-foreground">{group.count} <span className="text-xs font-medium text-foreground/55">môn</span></p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
