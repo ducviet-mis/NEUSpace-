@@ -4,9 +4,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  // Next.js emits inline bootstrap code. A nonce-based policy is preferable
-  // when the app is later moved to fully dynamic rendering.
-  `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self'${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data: https://*.supabase.co",
   "font-src 'self' data:",
@@ -20,6 +18,11 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
+  },
+  experimental: {
+    sri: {
+      algorithm: "sha256",
+    },
   },
   async headers() {
     return [
