@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -35,6 +36,7 @@ export default function RootLayout({
           <DashboardLayout>
             {children}
           </DashboardLayout>
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
